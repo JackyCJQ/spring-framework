@@ -47,11 +47,6 @@ import org.springframework.web.util.WebUtils;
  * for multipart requests, using a Map of Spring CommonsMultipartFile instances
  * as representation of uploaded files and a String-based parameter Map as
  * representation of uploaded form fields.
- *
- * @author Juergen Hoeller
- * @since 2.0
- * @see CommonsMultipartFile
- * @see CommonsMultipartResolver
  */
 public abstract class CommonsFileUploadSupport {
 
@@ -78,91 +73,40 @@ public abstract class CommonsFileUploadSupport {
 	}
 
 
-	/**
-	 * Return the underlying {@code org.apache.commons.fileupload.disk.DiskFileItemFactory}
-	 * instance. There is hardly any need to access this.
-	 * @return the underlying DiskFileItemFactory instance
-	 */
 	public DiskFileItemFactory getFileItemFactory() {
 		return this.fileItemFactory;
 	}
 
-	/**
-	 * Return the underlying {@code org.apache.commons.fileupload.FileUpload}
-	 * instance. There is hardly any need to access this.
-	 * @return the underlying FileUpload instance
-	 */
 	public FileUpload getFileUpload() {
 		return this.fileUpload;
 	}
 
-	/**
-	 * Set the maximum allowed size (in bytes) before an upload gets rejected.
-	 * -1 indicates no limit (the default).
-	 * @param maxUploadSize the maximum upload size allowed
-	 * @see org.apache.commons.fileupload.FileUploadBase#setSizeMax
-	 */
+
 	public void setMaxUploadSize(long maxUploadSize) {
 		this.fileUpload.setSizeMax(maxUploadSize);
 	}
 
-	/**
-	 * Set the maximum allowed size (in bytes) for each individual file before
-	 * an upload gets rejected. -1 indicates no limit (the default).
-	 * @param maxUploadSizePerFile the maximum upload size per file
-	 * @since 4.2
-	 * @see org.apache.commons.fileupload.FileUploadBase#setFileSizeMax
-	 */
 	public void setMaxUploadSizePerFile(long maxUploadSizePerFile) {
 		this.fileUpload.setFileSizeMax(maxUploadSizePerFile);
 	}
 
-	/**
-	 * Set the maximum allowed size (in bytes) before uploads are written to disk.
-	 * Uploaded files will still be received past this amount, but they will not be
-	 * stored in memory. Default is 10240, according to Commons FileUpload.
-	 * @param maxInMemorySize the maximum in memory size allowed
-	 * @see org.apache.commons.fileupload.disk.DiskFileItemFactory#setSizeThreshold
-	 */
 	public void setMaxInMemorySize(int maxInMemorySize) {
 		this.fileItemFactory.setSizeThreshold(maxInMemorySize);
 	}
 
-	/**
-	 * Set the default character encoding to use for parsing requests,
-	 * to be applied to headers of individual parts and to form fields.
-	 * Default is ISO-8859-1, according to the Servlet spec.
-	 * <p>If the request specifies a character encoding itself, the request
-	 * encoding will override this setting. This also allows for generically
-	 * overriding the character encoding in a filter that invokes the
-	 * {@code ServletRequest.setCharacterEncoding} method.
-	 * @param defaultEncoding the character encoding to use
-	 * @see javax.servlet.ServletRequest#getCharacterEncoding
-	 * @see javax.servlet.ServletRequest#setCharacterEncoding
-	 * @see WebUtils#DEFAULT_CHARACTER_ENCODING
-	 * @see org.apache.commons.fileupload.FileUploadBase#setHeaderEncoding
-	 */
 	public void setDefaultEncoding(String defaultEncoding) {
 		this.fileUpload.setHeaderEncoding(defaultEncoding);
 	}
 
-	/**
-	 * Determine the default encoding to use for parsing requests.
-	 * @see #setDefaultEncoding
-	 */
 	protected String getDefaultEncoding() {
 		String encoding = getFileUpload().getHeaderEncoding();
+		//ISO-8859-1
 		if (encoding == null) {
 			encoding = WebUtils.DEFAULT_CHARACTER_ENCODING;
 		}
 		return encoding;
 	}
 
-	/**
-	 * Set the temporary directory where uploaded files get stored.
-	 * Default is the servlet container's temporary directory for the web application.
-	 * @see org.springframework.web.util.WebUtils#TEMP_DIR_CONTEXT_ATTRIBUTE
-	 */
 	public void setUploadTempDir(Resource uploadTempDir) throws IOException {
 		if (!uploadTempDir.exists() && !uploadTempDir.getFile().mkdirs()) {
 			throw new IllegalArgumentException("Given uploadTempDir [" + uploadTempDir + "] could not be created");
@@ -171,34 +115,19 @@ public abstract class CommonsFileUploadSupport {
 		this.uploadTempDirSpecified = true;
 	}
 
-	/**
-	 * Return the temporary directory where uploaded files get stored.
-	 * @see #setUploadTempDir
-	 */
+
 	protected boolean isUploadTempDirSpecified() {
 		return this.uploadTempDirSpecified;
 	}
 
-	/**
-	 * Set whether to preserve the filename as sent by the client, not stripping off
-	 * path information in {@link CommonsMultipartFile#getOriginalFilename()}.
-	 * <p>Default is "false", stripping off path information that may prefix the
-	 * actual filename e.g. from Opera. Switch this to "true" for preserving the
-	 * client-specified filename as-is, including potential path separators.
-	 * @since 4.3.5
-	 * @see MultipartFile#getOriginalFilename()
-	 * @see CommonsMultipartFile#setPreserveFilename(boolean)
-	 */
+
 	public void setPreserveFilename(boolean preserveFilename) {
 		this.preserveFilename = preserveFilename;
 	}
 
 
 	/**
-	 * Factory method for a Commons DiskFileItemFactory instance.
-	 * <p>Default implementation returns a standard DiskFileItemFactory.
-	 * Can be overridden to use a custom subclass, e.g. for testing purposes.
-	 * @return the new DiskFileItemFactory instance
+	 * 创建一个commonsFileUpLoad的工厂
 	 */
 	protected DiskFileItemFactory newFileItemFactory() {
 		return new DiskFileItemFactory();

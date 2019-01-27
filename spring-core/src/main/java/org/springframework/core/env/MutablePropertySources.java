@@ -29,18 +29,19 @@ import org.springframework.lang.Nullable;
  * The default implementation of the {@link PropertySources} interface.
  * Allows manipulation of contained property sources and provides a constructor
  * for copying an existing {@code PropertySources} instance.
- *
+ * <p>
  * <p>Where <em>precedence</em> is mentioned in methods such as {@link #addFirst}
  * and {@link #addLast}, this is with regard to the order in which property sources
  * will be searched when resolving a given property with a {@link PropertyResolver}.
  *
  * @author Chris Beams
  * @author Juergen Hoeller
- * @since 3.1
  * @see PropertySourcesPropertyResolver
+ * @since 3.1
  */
 public class MutablePropertySources implements PropertySources {
 
+	//所有的资源被保存为一个读写list
 	private final List<PropertySource<?>> propertySourceList = new CopyOnWriteArrayList<>();
 
 
@@ -51,8 +52,7 @@ public class MutablePropertySources implements PropertySources {
 	}
 
 	/**
-	 * Create a new {@code MutablePropertySources} from the given propertySources
-	 * object, preserving the original order of contained {@code PropertySource} objects.
+	 * PropertySources继承了Iterable，所以可以进行循环
 	 */
 	public MutablePropertySources(PropertySources propertySources) {
 		this();
@@ -60,7 +60,6 @@ public class MutablePropertySources implements PropertySources {
 			addLast(propertySource);
 		}
 	}
-
 
 	@Override
 	public Iterator<PropertySource<?>> iterator() {
@@ -72,6 +71,7 @@ public class MutablePropertySources implements PropertySources {
 		return Spliterators.spliterator(this.propertySourceList, 0);
 	}
 
+	//转化为一个流
 	@Override
 	public Stream<PropertySource<?>> stream() {
 		return this.propertySourceList.stream();
@@ -94,6 +94,7 @@ public class MutablePropertySources implements PropertySources {
 	 * Add the given property source object with highest precedence.
 	 */
 	public void addFirst(PropertySource<?> propertySource) {
+		//先移除然后在添加
 		removeIfPresent(propertySource);
 		this.propertySourceList.add(0, propertySource);
 	}
@@ -102,6 +103,7 @@ public class MutablePropertySources implements PropertySources {
 	 * Add the given property source object with lowest precedence.
 	 */
 	public void addLast(PropertySource<?> propertySource) {
+		//先移除在添加
 		removeIfPresent(propertySource);
 		this.propertySourceList.add(propertySource);
 	}
@@ -111,8 +113,10 @@ public class MutablePropertySources implements PropertySources {
 	 * than the named relative property source.
 	 */
 	public void addBefore(String relativePropertySourceName, PropertySource<?> propertySource) {
+		//不能自己添加在自己的前面
 		assertLegalRelativeAddition(relativePropertySourceName, propertySource);
 		removeIfPresent(propertySource);
+		//获取前一个的索引
 		int index = assertPresentAndGetIndex(relativePropertySourceName);
 		addAtIndex(index, propertySource);
 	}
@@ -137,6 +141,7 @@ public class MutablePropertySources implements PropertySources {
 
 	/**
 	 * Remove and return the property source with the given name, {@code null} if not found.
+	 *
 	 * @param name the name of the property source to find and remove
 	 */
 	@Nullable
@@ -147,7 +152,8 @@ public class MutablePropertySources implements PropertySources {
 
 	/**
 	 * Replace the property source with the given name with the given property source object.
-	 * @param name the name of the property source to find and replace
+	 *
+	 * @param name           the name of the property source to find and replace
 	 * @param propertySource the replacement property source
 	 * @throws IllegalArgumentException if no property source with the given name is present
 	 * @see #contains
@@ -173,6 +179,7 @@ public class MutablePropertySources implements PropertySources {
 	 * Ensure that the given property source is not being added relative to itself.
 	 */
 	protected void assertLegalRelativeAddition(String relativePropertySourceName, PropertySource<?> propertySource) {
+		//获取要插入的名字
 		String newPropertySourceName = propertySource.getName();
 		if (relativePropertySourceName.equals(newPropertySourceName)) {
 			throw new IllegalArgumentException(
@@ -191,12 +198,14 @@ public class MutablePropertySources implements PropertySources {
 	 * Add the given property source at a particular index in the list.
 	 */
 	private void addAtIndex(int index, PropertySource<?> propertySource) {
+		//先移除在添加
 		removeIfPresent(propertySource);
 		this.propertySourceList.add(index, propertySource);
 	}
 
 	/**
 	 * Assert that the named property source is present and return its index.
+	 *
 	 * @param name {@linkplain PropertySource#getName() name of the property source} to find
 	 * @throws IllegalArgumentException if the named property source is not present
 	 */

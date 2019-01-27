@@ -42,47 +42,21 @@ public class MessageSourceAccessor {
 	@Nullable
 	private final Locale defaultLocale;
 
-
-	/**
-	 * Create a new MessageSourceAccessor, using LocaleContextHolder's locale
-	 * as default locale.
-	 * @param messageSource the MessageSource to wrap
-	 * @see org.springframework.context.i18n.LocaleContextHolder#getLocale()
-	 */
 	public MessageSourceAccessor(MessageSource messageSource) {
 		this.messageSource = messageSource;
 		this.defaultLocale = null;
 	}
 
-	/**
-	 * Create a new MessageSourceAccessor, using the given default locale.
-	 * @param messageSource the MessageSource to wrap
-	 * @param defaultLocale the default locale to use for message access
-	 */
 	public MessageSourceAccessor(MessageSource messageSource, Locale defaultLocale) {
 		this.messageSource = messageSource;
 		this.defaultLocale = defaultLocale;
 	}
 
 
-	/**
-	 * Return the default locale to use if no explicit locale has been given.
-	 * <p>The default implementation returns the default locale passed into the
-	 * corresponding constructor, or LocaleContextHolder's locale as fallback.
-	 * Can be overridden in subclasses.
-	 * @see #MessageSourceAccessor(org.springframework.context.MessageSource, java.util.Locale)
-	 * @see org.springframework.context.i18n.LocaleContextHolder#getLocale()
-	 */
 	protected Locale getDefaultLocale() {
 		return (this.defaultLocale != null ? this.defaultLocale : LocaleContextHolder.getLocale());
 	}
 
-	/**
-	 * Retrieve the message for the given code and the default Locale.
-	 * @param code code of the message
-	 * @param defaultMessage the String to return if the lookup fails
-	 * @return the message
-	 */
 	public String getMessage(String code, String defaultMessage) {
 		String msg = this.messageSource.getMessage(code, null, defaultMessage, getDefaultLocale());
 		return (msg != null ? msg : "");

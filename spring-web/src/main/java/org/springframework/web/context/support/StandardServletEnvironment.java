@@ -30,27 +30,26 @@ import org.springframework.lang.Nullable;
 import org.springframework.web.context.ConfigurableWebEnvironment;
 
 /**
+ * 默认使用StandardServletEnvironment作为运行的环境
  * {@link Environment} implementation to be used by {@code Servlet}-based web
  * applications. All web-related (servlet-based) {@code ApplicationContext} classes
  * initialize an instance by default.
- *
+ * <p>
  * <p>Contributes {@code ServletConfig}, {@code ServletContext}, and JNDI-based
  * {@link PropertySource} instances. See {@link #customizePropertySources} method
  * documentation for details.
  *
  * @author Chris Beams
- * @since 3.1
  * @see StandardEnvironment
+ * @since 3.1
  */
 public class StandardServletEnvironment extends StandardEnvironment implements ConfigurableWebEnvironment {
 
-	/** Servlet context init parameters property source name: {@value}. */
+	//servlet 初始化的参数
 	public static final String SERVLET_CONTEXT_PROPERTY_SOURCE_NAME = "servletContextInitParams";
-
-	/** Servlet config init parameters property source name: {@value}. */
+    //servletConfig	初始化的参数
 	public static final String SERVLET_CONFIG_PROPERTY_SOURCE_NAME = "servletConfigInitParams";
-
-	/** JNDI property source name: {@value}. */
+    //jndi的属性配置
 	public static final String JNDI_PROPERTY_SOURCE_NAME = "jndiProperties";
 
 
@@ -72,24 +71,21 @@ public class StandardServletEnvironment extends StandardEnvironment implements C
 	 * {@link StubPropertySource stubs} at this stage, and will be
 	 * {@linkplain #initPropertySources(ServletContext, ServletConfig) fully initialized}
 	 * once the actual {@link ServletContext} object becomes available.
-	 * @see StandardEnvironment#customizePropertySources
-	 * @see org.springframework.core.env.AbstractEnvironment#customizePropertySources
-	 * @see ServletConfigPropertySource
-	 * @see ServletContextPropertySource
-	 * @see org.springframework.jndi.JndiPropertySource
-	 * @see org.springframework.context.support.AbstractApplicationContext#initPropertySources
-	 * @see #initPropertySources(ServletContext, ServletConfig)
 	 */
 	@Override
 	protected void customizePropertySources(MutablePropertySources propertySources) {
+		//添加这两个配置的环境
 		propertySources.addLast(new StubPropertySource(SERVLET_CONFIG_PROPERTY_SOURCE_NAME));
 		propertySources.addLast(new StubPropertySource(SERVLET_CONTEXT_PROPERTY_SOURCE_NAME));
+		//如果是jndi环境则添加进jndi的配置
 		if (JndiLocatorDelegate.isDefaultJndiEnvironmentAvailable()) {
 			propertySources.addLast(new JndiPropertySource(JNDI_PROPERTY_SOURCE_NAME));
 		}
+		//调用父类在添加系统的配置
 		super.customizePropertySources(propertySources);
 	}
 
+	//通过servletContext,ServletConfig配置中获取对应的属性配置
 	@Override
 	public void initPropertySources(@Nullable ServletContext servletContext, @Nullable ServletConfig servletConfig) {
 		WebApplicationContextUtils.initServletPropertySources(getPropertySources(), servletContext, servletConfig);

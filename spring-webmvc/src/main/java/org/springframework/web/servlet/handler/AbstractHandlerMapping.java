@@ -51,32 +51,22 @@ import org.springframework.web.util.UrlPathHelper;
  * Abstract base class for {@link org.springframework.web.servlet.HandlerMapping}
  * implementations. Supports ordering, a default handler, handler interceptors,
  * including handler interceptors mapped by path patterns.
- *
+ * <p>
  * <p>Note: This base class does <i>not</i> support exposure of the
  * {@link #PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE}. Support for this attribute
  * is up to concrete subclasses, typically based on request URL mappings.
- *
- * @author Juergen Hoeller
- * @author Rossen Stoyanchev
- * @since 07.04.2003
- * @see #getHandlerInternal
- * @see #setDefaultHandler
- * @see #setAlwaysUseFullPath
- * @see #setUrlDecode
- * @see org.springframework.util.AntPathMatcher
- * @see #setInterceptors
- * @see org.springframework.web.servlet.HandlerInterceptor
  */
 public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 		implements HandlerMapping, Ordered, BeanNameAware {
 
+	//默认的处理器
 	@Nullable
 	private Object defaultHandler;
-
+	//URL解析器
 	private UrlPathHelper urlPathHelper = new UrlPathHelper();
-
+	//path解析器
 	private PathMatcher pathMatcher = new AntPathMatcher();
-
+	//定义的拦截器
 	private final List<Object> interceptors = new ArrayList<>();
 
 	private final List<HandlerInterceptor> adaptedInterceptors = new ArrayList<>();
@@ -90,144 +80,82 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 	@Nullable
 	private String beanName;
 
-
-	/**
-	 * Set the default handler for this handler mapping.
-	 * This handler will be returned if no specific mapping was found.
-	 * <p>Default is {@code null}, indicating no default handler.
-	 */
+	//设置默认的handler
 	public void setDefaultHandler(@Nullable Object defaultHandler) {
 		this.defaultHandler = defaultHandler;
 	}
 
-	/**
-	 * Return the default handler for this handler mapping,
-	 * or {@code null} if none.
-	 */
+	//获取默认的处理器
 	@Nullable
 	public Object getDefaultHandler() {
 		return this.defaultHandler;
 	}
 
-	/**
-	 * Shortcut to same property on underlying {@link #setUrlPathHelper UrlPathHelper}.
-	 * @see org.springframework.web.util.UrlPathHelper#setAlwaysUseFullPath(boolean)
-	 */
+	//设置是否使用全路径
 	public void setAlwaysUseFullPath(boolean alwaysUseFullPath) {
 		this.urlPathHelper.setAlwaysUseFullPath(alwaysUseFullPath);
 		this.globalCorsConfigSource.setAlwaysUseFullPath(alwaysUseFullPath);
 	}
 
-	/**
-	 * Shortcut to same property on underlying {@link #setUrlPathHelper UrlPathHelper}.
-	 * @see org.springframework.web.util.UrlPathHelper#setUrlDecode(boolean)
-	 */
+	//解码
 	public void setUrlDecode(boolean urlDecode) {
 		this.urlPathHelper.setUrlDecode(urlDecode);
 		this.globalCorsConfigSource.setUrlDecode(urlDecode);
 	}
 
-	/**
-	 * Shortcut to same property on underlying {@link #setUrlPathHelper UrlPathHelper}.
-	 * @see org.springframework.web.util.UrlPathHelper#setRemoveSemicolonContent(boolean)
-	 */
 	public void setRemoveSemicolonContent(boolean removeSemicolonContent) {
 		this.urlPathHelper.setRemoveSemicolonContent(removeSemicolonContent);
 		this.globalCorsConfigSource.setRemoveSemicolonContent(removeSemicolonContent);
 	}
 
-	/**
-	 * Set the UrlPathHelper to use for resolution of lookup paths.
-	 * <p>Use this to override the default UrlPathHelper with a custom subclass,
-	 * or to share common UrlPathHelper settings across multiple HandlerMappings
-	 * and MethodNameResolvers.
-	 */
 	public void setUrlPathHelper(UrlPathHelper urlPathHelper) {
 		Assert.notNull(urlPathHelper, "UrlPathHelper must not be null");
 		this.urlPathHelper = urlPathHelper;
 		this.globalCorsConfigSource.setUrlPathHelper(urlPathHelper);
 	}
 
-	/**
-	 * Return the UrlPathHelper implementation to use for resolution of lookup paths.
-	 */
 	public UrlPathHelper getUrlPathHelper() {
 		return this.urlPathHelper;
 	}
 
-	/**
-	 * Set the PathMatcher implementation to use for matching URL paths
-	 * against registered URL patterns. Default is AntPathMatcher.
-	 * @see org.springframework.util.AntPathMatcher
-	 */
+
 	public void setPathMatcher(PathMatcher pathMatcher) {
 		Assert.notNull(pathMatcher, "PathMatcher must not be null");
 		this.pathMatcher = pathMatcher;
 		this.globalCorsConfigSource.setPathMatcher(pathMatcher);
 	}
 
-	/**
-	 * Return the PathMatcher implementation to use for matching URL paths
-	 * against registered URL patterns.
-	 */
+
 	public PathMatcher getPathMatcher() {
 		return this.pathMatcher;
 	}
 
-	/**
-	 * Set the interceptors to apply for all handlers mapped by this handler mapping.
-	 * <p>Supported interceptor types are HandlerInterceptor, WebRequestInterceptor, and MappedInterceptor.
-	 * Mapped interceptors apply only to request URLs that match its path patterns.
-	 * Mapped interceptor beans are also detected by type during initialization.
-	 * @param interceptors array of handler interceptors
-	 * @see #adaptInterceptor
-	 * @see org.springframework.web.servlet.HandlerInterceptor
-	 * @see org.springframework.web.context.request.WebRequestInterceptor
-	 */
+    //设置一系列的拦截器
 	public void setInterceptors(Object... interceptors) {
 		this.interceptors.addAll(Arrays.asList(interceptors));
 	}
 
-	/**
-	 * Set "global" CORS configuration based on URL patterns. By default the first
-	 * matching URL pattern is combined with the CORS configuration for the
-	 * handler, if any.
-	 * @since 4.2
-	 */
+
 	public void setCorsConfigurations(Map<String, CorsConfiguration> corsConfigurations) {
 		this.globalCorsConfigSource.setCorsConfigurations(corsConfigurations);
 	}
 
-	/**
-	 * Get the "global" CORS configuration.
-	 */
 	public Map<String, CorsConfiguration> getCorsConfigurations() {
 		return this.globalCorsConfigSource.getCorsConfigurations();
 	}
 
-	/**
-	 * Configure a custom {@link CorsProcessor} to use to apply the matched
-	 * {@link CorsConfiguration} for a request.
-	 * <p>By default {@link DefaultCorsProcessor} is used.
-	 * @since 4.2
-	 */
 	public void setCorsProcessor(CorsProcessor corsProcessor) {
 		Assert.notNull(corsProcessor, "CorsProcessor must not be null");
 		this.corsProcessor = corsProcessor;
 	}
 
-	/**
-	 * Return the configured {@link CorsProcessor}.
-	 */
+
 	public CorsProcessor getCorsProcessor() {
 		return this.corsProcessor;
 	}
 
-	/**
-	 * Specify the order value for this HandlerMapping bean.
-	 * <p>The default value is {@code Ordered.LOWEST_PRECEDENCE}, meaning non-ordered.
-	 * @see org.springframework.core.Ordered#getOrder()
-	 */
+
+	//设置优先级
 	public void setOrder(int order) {
 		this.order = order;
 	}
@@ -249,6 +177,7 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 
 	/**
 	 * Initializes the interceptors.
+	 *
 	 * @see #extendInterceptors(java.util.List)
 	 * @see #initInterceptors()
 	 */
@@ -259,37 +188,15 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 		initInterceptors();
 	}
 
-	/**
-	 * Extension hook that subclasses can override to register additional interceptors,
-	 * given the configured interceptors (see {@link #setInterceptors}).
-	 * <p>Will be invoked before {@link #initInterceptors()} adapts the specified
-	 * interceptors into {@link HandlerInterceptor} instances.
-	 * <p>The default implementation is empty.
-	 * @param interceptors the configured interceptor List (never {@code null}), allowing
-	 * to add further interceptors before as well as after the existing interceptors
-	 */
 	protected void extendInterceptors(List<Object> interceptors) {
 	}
 
-	/**
-	 * Detect beans of type {@link MappedInterceptor} and add them to the list of mapped interceptors.
-	 * <p>This is called in addition to any {@link MappedInterceptor MappedInterceptors} that may have been provided
-	 * via {@link #setInterceptors}, by default adding all beans of type {@link MappedInterceptor}
-	 * from the current context and its ancestors. Subclasses can override and refine this policy.
-	 * @param mappedInterceptors an empty list to add {@link MappedInterceptor} instances to
-	 */
 	protected void detectMappedInterceptors(List<HandlerInterceptor> mappedInterceptors) {
 		mappedInterceptors.addAll(
 				BeanFactoryUtils.beansOfTypeIncludingAncestors(
 						obtainApplicationContext(), MappedInterceptor.class, true, false).values());
 	}
 
-	/**
-	 * Initialize the specified interceptors, checking for {@link MappedInterceptor MappedInterceptors} and
-	 * adapting {@link HandlerInterceptor}s and {@link WebRequestInterceptor HandlerInterceptor}s and {@link WebRequestInterceptors} if necessary.
-	 * @see #setInterceptors
-	 * @see #adaptInterceptor
-	 */
 	protected void initInterceptors() {
 		if (!this.interceptors.isEmpty()) {
 			for (int i = 0; i < this.interceptors.size(); i++) {
@@ -302,44 +209,23 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 		}
 	}
 
-	/**
-	 * Adapt the given interceptor object to the {@link HandlerInterceptor} interface.
-	 * <p>By default, the supported interceptor types are {@link HandlerInterceptor}
-	 * and {@link WebRequestInterceptor}. Each given {@link WebRequestInterceptor}
-	 * will be wrapped in a {@link WebRequestHandlerInterceptorAdapter}.
-	 * Can be overridden in subclasses.
-	 * @param interceptor the specified interceptor object
-	 * @return the interceptor wrapped as HandlerInterceptor
-	 * @see org.springframework.web.servlet.HandlerInterceptor
-	 * @see org.springframework.web.context.request.WebRequestInterceptor
-	 * @see WebRequestHandlerInterceptorAdapter
-	 */
 	protected HandlerInterceptor adaptInterceptor(Object interceptor) {
+		//可以定义两种interceptor
 		if (interceptor instanceof HandlerInterceptor) {
 			return (HandlerInterceptor) interceptor;
-		}
-		else if (interceptor instanceof WebRequestInterceptor) {
+		} else if (interceptor instanceof WebRequestInterceptor) {
 			return new WebRequestHandlerInterceptorAdapter((WebRequestInterceptor) interceptor);
-		}
-		else {
+		} else {
 			throw new IllegalArgumentException("Interceptor type not supported: " + interceptor.getClass().getName());
 		}
 	}
 
-	/**
-	 * Return the adapted interceptors as {@link HandlerInterceptor} array.
-	 * @return the array of {@link HandlerInterceptor HandlerInterceptors}, or {@code null} if none
-	 */
 	@Nullable
 	protected final HandlerInterceptor[] getAdaptedInterceptors() {
 		return (!this.adaptedInterceptors.isEmpty() ?
 				this.adaptedInterceptors.toArray(new HandlerInterceptor[0]) : null);
 	}
 
-	/**
-	 * Return all configured {@link MappedInterceptor MappedInterceptors} as an array.
-	 * @return the array of {@link MappedInterceptor MappedInterceptors}, or {@code null} if none
-	 */
 	@Nullable
 	protected final MappedInterceptor[] getMappedInterceptors() {
 		List<MappedInterceptor> mappedInterceptors = new ArrayList<>(this.adaptedInterceptors.size());
@@ -355,6 +241,7 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 	/**
 	 * Look up a handler for the given request, falling back to the default
 	 * handler if no specific one is found.
+	 *
 	 * @param request current HTTP request
 	 * @return the corresponding handler instance, or the default handler
 	 * @see #getHandlerInternal
@@ -363,6 +250,7 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 	@Nullable
 	public final HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception {
 		Object handler = getHandlerInternal(request);
+		//如果不存在就返回默认的handle
 		if (handler == null) {
 			handler = getDefaultHandler();
 		}
@@ -379,8 +267,7 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 
 		if (logger.isTraceEnabled()) {
 			logger.trace("Mapped to " + handler);
-		}
-		else if (logger.isDebugEnabled() && !request.getDispatcherType().equals(DispatcherType.ASYNC)) {
+		} else if (logger.isDebugEnabled() && !request.getDispatcherType().equals(DispatcherType.ASYNC)) {
 			logger.debug("Mapped to " + executionChain.getHandler());
 		}
 
@@ -394,45 +281,10 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 		return executionChain;
 	}
 
-	/**
-	 * Look up a handler for the given request, returning {@code null} if no
-	 * specific one is found. This method is called by {@link #getHandler};
-	 * a {@code null} return value will lead to the default handler, if one is set.
-	 * <p>On CORS pre-flight requests this method should return a match not for
-	 * the pre-flight request but for the expected actual request based on the URL
-	 * path, the HTTP methods from the "Access-Control-Request-Method" header, and
-	 * the headers from the "Access-Control-Request-Headers" header thus allowing
-	 * the CORS configuration to be obtained via {@link #getCorsConfigurations},
-	 * <p>Note: This method may also return a pre-built {@link HandlerExecutionChain},
-	 * combining a handler object with dynamically determined interceptors.
-	 * Statically specified interceptors will get merged into such an existing chain.
-	 * @param request current HTTP request
-	 * @return the corresponding handler instance, or {@code null} if none found
-	 * @throws Exception if there is an internal error
-	 */
 	@Nullable
 	protected abstract Object getHandlerInternal(HttpServletRequest request) throws Exception;
 
-	/**
-	 * Build a {@link HandlerExecutionChain} for the given handler, including
-	 * applicable interceptors.
-	 * <p>The default implementation builds a standard {@link HandlerExecutionChain}
-	 * with the given handler, the handler mapping's common interceptors, and any
-	 * {@link MappedInterceptor MappedInterceptors} matching to the current request URL. Interceptors
-	 * are added in the order they were registered. Subclasses may override this
-	 * in order to extend/rearrange the list of interceptors.
-	 * <p><b>NOTE:</b> The passed-in handler object may be a raw handler or a
-	 * pre-built {@link HandlerExecutionChain}. This method should handle those
-	 * two cases explicitly, either building a new {@link HandlerExecutionChain}
-	 * or extending the existing chain.
-	 * <p>For simply adding an interceptor in a custom subclass, consider calling
-	 * {@code super.getHandlerExecutionChain(handler, request)} and invoking
-	 * {@link HandlerExecutionChain#addInterceptor} on the returned chain object.
-	 * @param handler the resolved handler instance (never {@code null})
-	 * @param request current HTTP request
-	 * @return the HandlerExecutionChain (never {@code null})
-	 * @see #getAdaptedInterceptors()
-	 */
+
 	protected HandlerExecutionChain getHandlerExecutionChain(Object handler, HttpServletRequest request) {
 		HandlerExecutionChain chain = (handler instanceof HandlerExecutionChain ?
 				(HandlerExecutionChain) handler : new HandlerExecutionChain(handler));
@@ -444,8 +296,7 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 				if (mappedInterceptor.matches(lookupPath, this.pathMatcher)) {
 					chain.addInterceptor(mappedInterceptor.getInterceptor());
 				}
-			}
-			else {
+			} else {
 				chain.addInterceptor(interceptor);
 			}
 		}
@@ -454,6 +305,7 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 
 	/**
 	 * Retrieve the CORS configuration for the given handler.
+	 *
 	 * @param handler the handler to check (never {@code null}).
 	 * @param request the current request.
 	 * @return the CORS configuration for the handler, or {@code null} if none
@@ -478,19 +330,19 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 	 * {@link #setCorsProcessor}.
 	 * <p>For actual requests, the default implementation inserts a
 	 * HandlerInterceptor that makes CORS-related checks and adds CORS headers.
+	 *
 	 * @param request the current request
-	 * @param chain the handler chain
-	 * @param config the applicable CORS configuration (possibly {@code null})
+	 * @param chain   the handler chain
+	 * @param config  the applicable CORS configuration (possibly {@code null})
 	 * @since 4.2
 	 */
 	protected HandlerExecutionChain getCorsHandlerExecutionChain(HttpServletRequest request,
-			HandlerExecutionChain chain, @Nullable CorsConfiguration config) {
+																 HandlerExecutionChain chain, @Nullable CorsConfiguration config) {
 
 		if (CorsUtils.isPreFlightRequest(request)) {
 			HandlerInterceptor[] interceptors = chain.getInterceptors();
 			chain = new HandlerExecutionChain(new PreFlightHandler(config), interceptors);
-		}
-		else {
+		} else {
 			chain.addInterceptor(new CorsInterceptor(config));
 		}
 		return chain;

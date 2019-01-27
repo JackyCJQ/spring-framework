@@ -24,7 +24,7 @@ import java.util.Map;
  * property sources. Allows clients to set and validate required properties, customize the
  * conversion service and more through the {@link ConfigurablePropertyResolver}
  * superinterface.
- *
+ * <p>
  * <h2>Manipulating property sources</h2>
  * <p>Property sources may be removed, reordered, or replaced; and additional
  * property sources may be added using the {@link MutablePropertySources}
@@ -32,7 +32,7 @@ import java.util.Map;
  * are against the {@link StandardEnvironment} implementation of
  * {@code ConfigurableEnvironment}, but are generally applicable to any implementation,
  * though particular default property sources may differ.
- *
+ * <p>
  * <h4>Example: adding a new property source with highest search priority</h4>
  * <pre class="code">
  * ConfigurableEnvironment environment = new StandardEnvironment();
@@ -41,20 +41,20 @@ import java.util.Map;
  * myMap.put("xyz", "myValue");
  * propertySources.addFirst(new MapPropertySource("MY_MAP", myMap));
  * </pre>
- *
+ * <p>
  * <h4>Example: removing the default system properties property source</h4>
  * <pre class="code">
  * MutablePropertySources propertySources = environment.getPropertySources();
  * propertySources.remove(StandardEnvironment.SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME)
  * </pre>
- *
+ * <p>
  * <h4>Example: mocking the system environment for testing purposes</h4>
  * <pre class="code">
  * MutablePropertySources propertySources = environment.getPropertySources();
  * MockPropertySource mockEnvVars = new MockPropertySource().withProperty("xyz", "myValue");
  * propertySources.replace(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME, mockEnvVars);
  * </pre>
- *
+ * <p>
  * When an {@link Environment} is being used by an {@code ApplicationContext}, it is
  * important that any such {@code PropertySource} manipulations be performed
  * <em>before</em> the context's {@link
@@ -63,11 +63,6 @@ import java.util.Map;
  * container bootstrap process, including use by {@linkplain
  * org.springframework.context.support.PropertySourcesPlaceholderConfigurer property
  * placeholder configurers}.
- *
- * @author Chris Beams
- * @since 3.1
- * @see StandardEnvironment
- * @see org.springframework.context.ConfigurableApplicationContext#getEnvironment
  */
 public interface ConfigurableEnvironment extends Environment, ConfigurablePropertyResolver {
 
@@ -78,26 +73,17 @@ public interface ConfigurableEnvironment extends Environment, ConfigurableProper
 	 * <p>Any existing active profiles will be replaced with the given arguments; call
 	 * with zero arguments to clear the current set of active profiles. Use
 	 * {@link #addActiveProfile} to add a profile while preserving the existing set.
-	 * @throws IllegalArgumentException if any profile is null, empty or whitespace-only
-	 * @see #addActiveProfile
-	 * @see #setDefaultProfiles
-	 * @see org.springframework.context.annotation.Profile
-	 * @see AbstractEnvironment#ACTIVE_PROFILES_PROPERTY_NAME
 	 */
 	void setActiveProfiles(String... profiles);
 
 	/**
 	 * Add a profile to the current set of active profiles.
-	 * @throws IllegalArgumentException if the profile is null, empty or whitespace-only
-	 * @see #setActiveProfiles
 	 */
 	void addActiveProfile(String profile);
 
 	/**
 	 * Specify the set of profiles to be made active by default if no other profiles
 	 * are explicitly made active through {@link #setActiveProfiles}.
-	 * @throws IllegalArgumentException if any profile is null, empty or whitespace-only
-	 * @see AbstractEnvironment#DEFAULT_PROFILES_PROPERTY_NAME
 	 */
 	void setDefaultProfiles(String... profiles);
 
@@ -114,6 +100,7 @@ public interface ConfigurableEnvironment extends Environment, ConfigurableProper
 	 * certain user-defined property sources have search precedence over default property
 	 * sources such as the set of system properties or the set of system environment
 	 * variables.
+	 *
 	 * @see AbstractEnvironment#customizePropertySources
 	 */
 	MutablePropertySources getPropertySources();
@@ -162,9 +149,6 @@ public interface ConfigurableEnvironment extends Environment, ConfigurableProper
 	 * the parent environment occurring after the call to {@code merge} will not be
 	 * reflected in the child. Therefore, care should be taken to configure parent
 	 * property sources and profile information prior to calling {@code merge}.
-	 * @param parent the environment to merge with
-	 * @since 3.1.2
-	 * @see org.springframework.context.support.AbstractApplicationContext#setParent
 	 */
 	void merge(ConfigurableEnvironment parent);
 

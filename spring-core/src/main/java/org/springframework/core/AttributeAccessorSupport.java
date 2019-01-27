@@ -29,10 +29,6 @@ import org.springframework.util.StringUtils;
  * a base implementation of all methods. To be extended by subclasses.
  *
  * <p>{@link Serializable} if subclasses and all attribute values are {@link Serializable}.
- *
- * @author Rob Harrop
- * @author Juergen Hoeller
- * @since 2.0
  */
 @SuppressWarnings("serial")
 public abstract class AttributeAccessorSupport implements AttributeAccessor, Serializable {
@@ -43,6 +39,7 @@ public abstract class AttributeAccessorSupport implements AttributeAccessor, Ser
 
 	@Override
 	public void setAttribute(String name, @Nullable Object value) {
+		//名字不能为空
 		Assert.notNull(name, "Name must not be null");
 		if (value != null) {
 			this.attributes.put(name, value);
@@ -79,6 +76,7 @@ public abstract class AttributeAccessorSupport implements AttributeAccessor, Ser
 
 
 	/**
+	 * 进行属性的复制
 	 * Copy the attributes from the supplied AttributeAccessor to this accessor.
 	 * @param source the AttributeAccessor to copy from
 	 */

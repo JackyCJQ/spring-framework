@@ -60,6 +60,7 @@ public abstract class AbstractUrlHandlerMapping extends AbstractHandlerMapping i
 
 	private boolean lazyInitHandlers = false;
 
+	//handle映射关系
 	private final Map<String, Object> handlerMap = new LinkedHashMap<>();
 
 

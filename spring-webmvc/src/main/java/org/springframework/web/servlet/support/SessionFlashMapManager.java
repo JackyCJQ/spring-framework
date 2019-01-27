@@ -26,6 +26,7 @@ import org.springframework.web.servlet.FlashMap;
 import org.springframework.web.util.WebUtils;
 
 /**
+ * 一般是在一个session中
  * Store and retrieve {@link FlashMap} instances to and from the HTTP session.
  *
  * @author Rossen Stoyanchev
@@ -44,7 +45,9 @@ public class SessionFlashMapManager extends AbstractFlashMapManager {
 	@SuppressWarnings("unchecked")
 	@Nullable
 	protected List<FlashMap> retrieveFlashMaps(HttpServletRequest request) {
+		//是否携带Session
 		HttpSession session = request.getSession(false);
+		//实际上就是通过一个属性的名字，来进行数据的传递
 		return (session != null ? (List<FlashMap>) session.getAttribute(FLASH_MAPS_SESSION_ATTRIBUTE) : null);
 	}
 
@@ -53,6 +56,7 @@ public class SessionFlashMapManager extends AbstractFlashMapManager {
 	 */
 	@Override
 	protected void updateFlashMaps(List<FlashMap> flashMaps, HttpServletRequest request, HttpServletResponse response) {
+		//把这个数据添加到Session中
 		WebUtils.setSessionAttribute(request, FLASH_MAPS_SESSION_ATTRIBUTE, (!flashMaps.isEmpty() ? flashMaps : null));
 	}
 

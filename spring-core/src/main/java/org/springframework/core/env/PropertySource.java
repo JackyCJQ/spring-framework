@@ -30,39 +30,39 @@ import org.springframework.util.ObjectUtils;
  * objects, {@code ServletContext} and {@code ServletConfig} objects (for access to init
  * parameters). Explore the {@code PropertySource} type hierarchy to see provided
  * implementations.
- *
+ * <p>
  * <p>{@code PropertySource} objects are not typically used in isolation, but rather
  * through a {@link PropertySources} object, which aggregates property sources and in
  * conjunction with a {@link PropertyResolver} implementation that can perform
  * precedence-based searches across the set of {@code PropertySources}.
- *
+ * <p>
  * <p>{@code PropertySource} identity is determined not based on the content of
  * encapsulated properties, but rather based on the {@link #getName() name} of the
  * {@code PropertySource} alone. This is useful for manipulating {@code PropertySource}
  * objects when in collection contexts. See operations in {@link MutablePropertySources}
  * as well as the {@link #named(String)} and {@link #toString()} methods for details.
- *
+ * <p>
  * <p>Note that when working with @{@link
  * org.springframework.context.annotation.Configuration Configuration} classes that
  * the @{@link org.springframework.context.annotation.PropertySource PropertySource}
  * annotation provides a convenient and declarative way of adding property sources to the
  * enclosing {@code Environment}.
  *
- * @author Chris Beams
- * @since 3.1
  * @param <T> the source type
+ * @author Chris Beams
  * @see PropertySources
  * @see PropertyResolver
  * @see PropertySourcesPropertyResolver
  * @see MutablePropertySources
  * @see org.springframework.context.annotation.PropertySource
+ * @since 3.1
  */
 public abstract class PropertySource<T> {
 
 	protected final Log logger = LogFactory.getLog(getClass());
-
+	//属性的名字
 	protected final String name;
-
+	//属性的资源，这个可能会有多种形式
 	protected final T source;
 
 
@@ -70,45 +70,31 @@ public abstract class PropertySource<T> {
 	 * Create a new {@code PropertySource} with the given name and source object.
 	 */
 	public PropertySource(String name, T source) {
+		//两者都不能为空
 		Assert.hasText(name, "Property source name must contain at least one character");
 		Assert.notNull(source, "Property source must not be null");
 		this.name = name;
 		this.source = source;
 	}
 
-	/**
-	 * Create a new {@code PropertySource} with the given name and with a new
-	 * {@code Object} instance as the underlying source.
-	 * <p>Often useful in testing scenarios when creating anonymous implementations
-	 * that never query an actual source but rather return hard-coded values.
-	 */
 	@SuppressWarnings("unchecked")
+	//默认是object
 	public PropertySource(String name) {
 		this(name, (T) new Object());
 	}
 
 
-	/**
-	 * Return the name of this {@code PropertySource}.
-	 */
+
 	public String getName() {
 		return this.name;
 	}
 
-	/**
-	 * Return the underlying source object for this {@code PropertySource}.
-	 */
+
 	public T getSource() {
 		return this.source;
 	}
 
-	/**
-	 * Return whether this {@code PropertySource} contains the given name.
-	 * <p>This implementation simply checks for a {@code null} return value
-	 * from {@link #getProperty(String)}. Subclasses may wish to implement
-	 * a more efficient algorithm if possible.
-	 * @param name the property name to find
-	 */
+	//判断这个资源中是否存在对应名字的属性
 	public boolean containsProperty(String name) {
 		return (getProperty(name) != null);
 	}
@@ -116,6 +102,7 @@ public abstract class PropertySource<T> {
 	/**
 	 * Return the value associated with the given name,
 	 * or {@code null} if not found.
+	 *
 	 * @param name the property to find
 	 * @see PropertyResolver#getRequiredProperty(String)
 	 */
@@ -153,6 +140,7 @@ public abstract class PropertySource<T> {
 	 * <p>This variable verbosity is useful as a property source such as system properties
 	 * or environment variables may contain an arbitrary number of property pairs,
 	 * potentially leading to difficult to read exception and log messages.
+	 *
 	 * @see Log#isDebugEnabled()
 	 */
 	@Override
@@ -160,14 +148,14 @@ public abstract class PropertySource<T> {
 		if (logger.isDebugEnabled()) {
 			return getClass().getSimpleName() + "@" + System.identityHashCode(this) +
 					" {name='" + this.name + "', properties=" + this.source + "}";
-		}
-		else {
+		} else {
 			return getClass().getSimpleName() + " {name='" + this.name + "'}";
 		}
 	}
 
 
 	/**
+	 * 这个方法仅仅用来获取资源的名字
 	 * Return a {@code PropertySource} implementation intended for collection comparison purposes only.
 	 * <p>Primarily for internal use, but given a collection of {@code PropertySource} objects, may be
 	 * used as follows:
@@ -182,6 +170,7 @@ public abstract class PropertySource<T> {
 	 * The returned {@code PropertySource} will throw {@code UnsupportedOperationException}
 	 * if any methods other than {@code equals(Object)}, {@code hashCode()}, and {@code toString()}
 	 * are called.
+	 *
 	 * @param name the name of the comparison {@code PropertySource} to be created and returned.
 	 */
 	public static PropertySource<?> named(String name) {
@@ -197,9 +186,6 @@ public abstract class PropertySource<T> {
 	 * {@code ApplicationContext}.  In such cases, a stub should be used to hold the
 	 * intended default position/order of the property source, then be replaced
 	 * during context refresh.
-	 * @see org.springframework.context.support.AbstractApplicationContext#initPropertySources()
-	 * @see org.springframework.web.context.support.StandardServletEnvironment
-	 * @see org.springframework.web.context.support.ServletContextPropertySource
 	 */
 	public static class StubPropertySource extends PropertySource<Object> {
 
@@ -208,7 +194,7 @@ public abstract class PropertySource<T> {
 		}
 
 		/**
-		 * Always returns {@code null}.
+		 * Always returns {@code null}.总是返回null
 		 */
 		@Override
 		@Nullable
@@ -219,10 +205,9 @@ public abstract class PropertySource<T> {
 
 
 	/**
+	 * 所有的获取都报错了
 	 * A {@code PropertySource} implementation intended for collection comparison
 	 * purposes.
-	 *
-	 * @see PropertySource#named(String)
 	 */
 	static class ComparisonPropertySource extends StubPropertySource {
 

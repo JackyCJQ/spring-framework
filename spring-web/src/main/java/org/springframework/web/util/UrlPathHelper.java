@@ -35,15 +35,6 @@ import org.springframework.util.StringUtils;
 /**
  * Helper class for URL path matching. Provides support for URL paths in
  * RequestDispatcher includes and support for consistent URL decoding.
- *
- * <p>Used by {@link org.springframework.web.servlet.handler.AbstractUrlHandlerMapping}
- * and {@link org.springframework.web.servlet.support.RequestContext} for path matching
- * and/or URI determination.
- *
- * @author Juergen Hoeller
- * @author Rob Harrop
- * @author Rossen Stoyanchev
- * @since 14.01.2004
  */
 public class UrlPathHelper {
 
@@ -69,59 +60,24 @@ public class UrlPathHelper {
 	private String defaultEncoding = WebUtils.DEFAULT_CHARACTER_ENCODING;
 
 
-	/**
-	 * Whether URL lookups should always use the full path within current
-	 * application context, i.e. within {@link ServletContext#getContextPath()}.
-	 * <p>If set to {@literal false} the path within the current servlet mapping
-	 * is used instead if applicable (i.e. in the case of a prefix based Servlet
-	 * mapping such as "/myServlet/*").
-	 * <p>By default this is set to "false".
-	 */
 	public void setAlwaysUseFullPath(boolean alwaysUseFullPath) {
 		this.alwaysUseFullPath = alwaysUseFullPath;
 	}
 
-	/**
-	 * Whether the context path and request URI should be decoded -- both of
-	 * which are returned <i>undecoded</i> by the Servlet API, in contrast to
-	 * the servlet path.
-	 * <p>Either the request encoding or the default Servlet spec encoding
-	 * (ISO-8859-1) is used when set to "true".
-	 * <p>By default this is set to {@literal true}.
-	 * <p><strong>Note:</strong> Be aware the servlet path will not match when
-	 * compared to encoded paths. Therefore use of {@code urlDecode=false} is
-	 * not compatible with a prefix-based Servlet mappping and likewise implies
-	 * also setting {@code alwaysUseFullPath=true}.
-	 * @see #getServletPath
-	 * @see #getContextPath
-	 * @see #getRequestUri
-	 * @see WebUtils#DEFAULT_CHARACTER_ENCODING
-	 * @see javax.servlet.ServletRequest#getCharacterEncoding()
-	 * @see java.net.URLDecoder#decode(String, String)
-	 */
+
 	public void setUrlDecode(boolean urlDecode) {
 		this.urlDecode = urlDecode;
 	}
 
-	/**
-	 * Whether to decode the request URI when determining the lookup path.
-	 * @since 4.3.13
-	 */
+
 	public boolean isUrlDecode() {
 		return this.urlDecode;
 	}
 
-	/**
-	 * Set if ";" (semicolon) content should be stripped from the request URI.
-	 * <p>Default is "true".
-	 */
 	public void setRemoveSemicolonContent(boolean removeSemicolonContent) {
 		this.removeSemicolonContent = removeSemicolonContent;
 	}
 
-	/**
-	 * Whether configured to remove ";" (semicolon) content from the request URI.
-	 */
 	public boolean shouldRemoveSemicolonContent() {
 		return this.removeSemicolonContent;
 	}
@@ -129,15 +85,6 @@ public class UrlPathHelper {
 	/**
 	 * Set the default character encoding to use for URL decoding.
 	 * Default is ISO-8859-1, according to the Servlet spec.
-	 * <p>If the request specifies a character encoding itself, the request
-	 * encoding will override this setting. This also allows for generically
-	 * overriding the character encoding in a filter that invokes the
-	 * {@code ServletRequest.setCharacterEncoding} method.
-	 * @param defaultEncoding the character encoding to use
-	 * @see #determineEncoding
-	 * @see javax.servlet.ServletRequest#getCharacterEncoding()
-	 * @see javax.servlet.ServletRequest#setCharacterEncoding(String)
-	 * @see WebUtils#DEFAULT_CHARACTER_ENCODING
 	 */
 	public void setDefaultEncoding(String defaultEncoding) {
 		this.defaultEncoding = defaultEncoding;
@@ -151,15 +98,6 @@ public class UrlPathHelper {
 	}
 
 
-	/**
-	 * Return the mapping lookup path for the given request, within the current
-	 * servlet mapping if applicable, else within the web application.
-	 * <p>Detects include request URL if called within a RequestDispatcher include.
-	 * @param request current HTTP request
-	 * @return the lookup path
-	 * @see #getPathWithinApplication
-	 * @see #getPathWithinServletMapping
-	 */
 	public String getLookupPathForRequest(HttpServletRequest request) {
 		// Always use full path within current servlet context?
 		if (this.alwaysUseFullPath) {

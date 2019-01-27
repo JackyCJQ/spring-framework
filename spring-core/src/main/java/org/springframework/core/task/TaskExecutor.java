@@ -19,6 +19,7 @@ package org.springframework.core.task;
 import java.util.concurrent.Executor;
 
 /**
+ * 重新写了一下Executor
  * Simple task executor interface that abstracts the execution
  * of a {@link Runnable}.
  *
@@ -30,10 +31,6 @@ import java.util.concurrent.Executor;
  * a dependency on an Executor and receive any TaskExecutor implementation.
  * This interface remains separate from the standard Executor interface
  * mainly for backwards compatibility with JDK 1.4 in Spring 2.x.
- *
- * @author Juergen Hoeller
- * @since 2.0
- * @see java.util.concurrent.Executor
  */
 @FunctionalInterface
 public interface TaskExecutor extends Executor {

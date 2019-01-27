@@ -49,8 +49,10 @@ public abstract class AbstractFlashMapManager implements FlashMapManager {
 
 	protected final Log logger = LogFactory.getLog(getClass());
 
+	//默认过期时间为3分钟
 	private int flashMapTimeout = 180;
 
+	//对于请求ulr路径的解析
 	private UrlPathHelper urlPathHelper = new UrlPathHelper();
 
 
@@ -89,12 +91,15 @@ public abstract class AbstractFlashMapManager implements FlashMapManager {
 	@Override
 	@Nullable
 	public final FlashMap retrieveAndUpdate(HttpServletRequest request, HttpServletResponse response) {
+		//就是通过对session中某个属性
 		List<FlashMap> allFlashMaps = retrieveFlashMaps(request);
+		//如果不存在，就返回
 		if (CollectionUtils.isEmpty(allFlashMaps)) {
 			return null;
 		}
-
+        //获取所有过期的FlashMap
 		List<FlashMap> mapsToRemove = getExpiredFlashMaps(allFlashMaps);
+		//获取匹配的FlashMap
 		FlashMap match = getMatchingFlashMap(allFlashMaps, request);
 		if (match != null) {
 			mapsToRemove.add(match);
@@ -145,6 +150,7 @@ public abstract class AbstractFlashMapManager implements FlashMapManager {
 				result.add(flashMap);
 			}
 		}
+		//默认只返回一个
 		if (!result.isEmpty()) {
 			Collections.sort(result);
 			if (logger.isTraceEnabled()) {
@@ -162,13 +168,18 @@ public abstract class AbstractFlashMapManager implements FlashMapManager {
 	protected boolean isFlashMapForRequest(FlashMap flashMap, HttpServletRequest request) {
 		String expectedPath = flashMap.getTargetRequestPath();
 		if (expectedPath != null) {
+			//获取本次请求uri
 			String requestUri = getUrlPathHelper().getOriginatingRequestUri(request);
+			//如果请求的URL不符合，则直接返回false
 			if (!requestUri.equals(expectedPath) && !requestUri.equals(expectedPath + "/")) {
 				return false;
 			}
 		}
+		//获取所有的请求参数
 		MultiValueMap<String, String> actualParams = getOriginatingRequestParams(request);
+		//获取flashMap中的参数
 		MultiValueMap<String, String> expectedParams = flashMap.getTargetRequestParams();
+		//判断所要求的属性，是否都真实存在
 		for (String expectedName : expectedParams.keySet()) {
 			List<String> actualValues = actualParams.get(expectedName);
 			if (actualValues == null) {
@@ -200,6 +211,7 @@ public abstract class AbstractFlashMapManager implements FlashMapManager {
 		flashMap.startExpirationPeriod(getFlashMapTimeout());
 
 		Object mutex = getFlashMapsMutex(request);
+		//加锁处理
 		if (mutex != null) {
 			synchronized (mutex) {
 				List<FlashMap> allFlashMaps = retrieveFlashMaps(request);
@@ -208,6 +220,7 @@ public abstract class AbstractFlashMapManager implements FlashMapManager {
 				updateFlashMaps(allFlashMaps, request, response);
 			}
 		}
+		//不加锁处理
 		else {
 			List<FlashMap> allFlashMaps = retrieveFlashMaps(request);
 			allFlashMaps = (allFlashMaps != null ? allFlashMaps : new LinkedList<>());
