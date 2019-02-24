@@ -68,15 +68,17 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 	private PathMatcher pathMatcher = new AntPathMatcher();
 	//定义的拦截器
 	private final List<Object> interceptors = new ArrayList<>();
-
+	//应该是这个mapping使用的拦截器
 	private final List<HandlerInterceptor> adaptedInterceptors = new ArrayList<>();
 
 	private final UrlBasedCorsConfigurationSource globalCorsConfigSource = new UrlBasedCorsConfigurationSource();
 
+	//跨越处理
 	private CorsProcessor corsProcessor = new DefaultCorsProcessor();
 
+	//默认权限是最低的
 	private int order = Ordered.LOWEST_PRECEDENCE;  // default: same as non-Ordered
-
+	//自己在容器中的名字
 	@Nullable
 	private String beanName;
 
@@ -93,6 +95,7 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 
 	//设置是否使用全路径
 	public void setAlwaysUseFullPath(boolean alwaysUseFullPath) {
+		//这个两个路径解析器在解析的时候配置
 		this.urlPathHelper.setAlwaysUseFullPath(alwaysUseFullPath);
 		this.globalCorsConfigSource.setAlwaysUseFullPath(alwaysUseFullPath);
 	}
@@ -130,7 +133,7 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 		return this.pathMatcher;
 	}
 
-    //设置一系列的拦截器
+	//设置一系列的拦截器
 	public void setInterceptors(Object... interceptors) {
 		this.interceptors.addAll(Arrays.asList(interceptors));
 	}
@@ -214,6 +217,7 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 		if (interceptor instanceof HandlerInterceptor) {
 			return (HandlerInterceptor) interceptor;
 		} else if (interceptor instanceof WebRequestInterceptor) {
+			//这种需要一个适配器进行转换一下
 			return new WebRequestHandlerInterceptorAdapter((WebRequestInterceptor) interceptor);
 		} else {
 			throw new IllegalArgumentException("Interceptor type not supported: " + interceptor.getClass().getName());
@@ -239,13 +243,11 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 
 
 	/**
+	 * 根据请求查找对应的Mapping
 	 * Look up a handler for the given request, falling back to the default
 	 * handler if no specific one is found.
-	 *
-	 * @param request current HTTP request
-	 * @return the corresponding handler instance, or the default handler
-	 * @see #getHandlerInternal
 	 */
+
 	@Override
 	@Nullable
 	public final HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception {
@@ -259,6 +261,7 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 		}
 		// Bean name or resolved handler?
 		if (handler instanceof String) {
+			//根据名字去容器中获取
 			String handlerName = (String) handler;
 			handler = obtainApplicationContext().getBean(handlerName);
 		}
@@ -270,7 +273,7 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 		} else if (logger.isDebugEnabled() && !request.getDispatcherType().equals(DispatcherType.ASYNC)) {
 			logger.debug("Mapped to " + executionChain.getHandler());
 		}
-
+		//判断是否是跨域处理
 		if (CorsUtils.isCorsRequest(request)) {
 			CorsConfiguration globalConfig = this.globalCorsConfigSource.getCorsConfiguration(request);
 			CorsConfiguration handlerConfig = getCorsConfiguration(handler, request);
@@ -281,6 +284,7 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 		return executionChain;
 	}
 
+	//模版方法 交给子类去具体的处理
 	@Nullable
 	protected abstract Object getHandlerInternal(HttpServletRequest request) throws Exception;
 

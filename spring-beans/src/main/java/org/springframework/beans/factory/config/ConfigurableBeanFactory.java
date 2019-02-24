@@ -35,42 +35,22 @@ import org.springframework.util.StringValueResolver;
  * facilities to configure a bean factory, in addition to the bean factory
  * client methods in the {@link org.springframework.beans.factory.BeanFactory}
  * interface.
- * <p>
- * <p>This bean factory interface is not meant to be used in normal application
- * code: Stick to {@link org.springframework.beans.factory.BeanFactory} or
- * {@link org.springframework.beans.factory.ListableBeanFactory} for typical
- * needs. This extended interface is just meant to allow for framework-internal
- * plug'n'play and for special access to bean factory configuration methods.
  */
 public interface ConfigurableBeanFactory extends HierarchicalBeanFactory, SingletonBeanRegistry {
 
-	/**
-	 * Scope identifier for the standard singleton scope: "singleton".
-	 * Custom scopes can be added via {@code registerScope}.
-	 */
 	String SCOPE_SINGLETON = "singleton";
 
-	/**
-	 * Scope identifier for the standard prototype scope: "prototype".
-	 * Custom scopes can be added via {@code registerScope}.
-	 */
 	String SCOPE_PROTOTYPE = "prototype";
 
 
 	/**
 	 * Set the parent of this bean factory.
-	 * <p>Note that the parent cannot be changed: It should only be set outside
-	 * a constructor if it isn't available at the time of factory instantiation.
 	 */
 	void setParentBeanFactory(BeanFactory parentBeanFactory) throws IllegalStateException;
 
 	/**
 	 * Set the class loader to use for loading bean classes.
 	 * Default is the thread context class loader.
-	 * <p>Note that this class loader will only apply to bean definitions
-	 * that do not carry a resolved bean class yet. This is the case as of
-	 * Spring 2.0 by default: Bean definitions only carry bean class names,
-	 * to be resolved once the factory processes the bean definition.
 	 */
 	void setBeanClassLoader(@Nullable ClassLoader beanClassLoader);
 
@@ -84,10 +64,6 @@ public interface ConfigurableBeanFactory extends HierarchicalBeanFactory, Single
 	/**
 	 * Specify a temporary ClassLoader to use for type matching purposes.
 	 * Default is none, simply using the standard bean ClassLoader.
-	 * <p>A temporary ClassLoader is usually just specified if
-	 * <i>load-time weaving</i> is involved, to make sure that actual bean
-	 * classes are loaded as lazily as possible. The temporary loader is
-	 * then removed once the BeanFactory completes its bootstrap phase.
 	 */
 	void setTempClassLoader(@Nullable ClassLoader tempClassLoader);
 
@@ -100,10 +76,7 @@ public interface ConfigurableBeanFactory extends HierarchicalBeanFactory, Single
 
 	/**
 	 * Set whether to cache bean metadata such as given bean definitions
-	 * (in merged fashion) and resolved bean classes. Default is on.
-	 * <p>Turn this flag off to enable hot-refreshing of bean definition objects
-	 * and in particular bean classes. If this flag is off, any creation of a bean
-	 * instance will re-query the bean class loader for newly resolved classes.
+	 * (in merged fashion) and resolved bean classes.
 	 */
 	void setCacheBeanMetadata(boolean cacheBeanMetadata);
 
@@ -115,9 +88,6 @@ public interface ConfigurableBeanFactory extends HierarchicalBeanFactory, Single
 
 	/**
 	 * Specify the resolution strategy for expressions in bean definition values.
-	 * <p>There is no expression support active in a BeanFactory by default.
-	 * An ApplicationContext will typically set a standard expression strategy
-	 * here, supporting "#{...}" expressions in a Unified EL compatible style.
 	 */
 	void setBeanExpressionResolver(@Nullable BeanExpressionResolver resolver);
 

@@ -30,28 +30,19 @@ import org.springframework.util.StringUtils;
 import org.springframework.util.StringValueResolver;
 
 /**
- * Simple implementation of the {@link AliasRegistry} interface.
- * Serves as base class for implementations.
+ * 对于别名注册机的简单实现
  */
 public class SimpleAliasRegistry implements AliasRegistry {
 
-	/**
-	 * Logger available to subclasses.
-	 */
 	protected final Log logger = LogFactory.getLog(getClass());
-
-	/**
-	 * 默认就是一个map来实现
-	 * Map from alias to canonical name.
-	 */
+    //把别名映射保存在一个map中
 	private final Map<String, String> aliasMap = new ConcurrentHashMap<>(16);
-
 
 	@Override
 	public void registerAlias(String name, String alias) {
 		Assert.hasText(name, "'name' must not be empty");
 		Assert.hasText(alias, "'alias' must not be empty");
-		//通过枷锁的方式实现
+		//加锁，防止并发的重复注册
 		synchronized (this.aliasMap) {
 			//如果别名和名字一致，就不用注册
 			if (alias.equals(name)) {
@@ -88,7 +79,6 @@ public class SimpleAliasRegistry implements AliasRegistry {
 	}
 
 	/**
-	 * 默认是允许进行别名的覆盖
 	 * Return whether alias overriding is allowed.
 	 * Default is {@code true}.
 	 */
@@ -198,11 +188,6 @@ public class SimpleAliasRegistry implements AliasRegistry {
 	 * Check whether the given name points back to the given alias as an alias
 	 * in the other direction already, catching a circular reference upfront
 	 * and throwing a corresponding IllegalStateException.
-	 *
-	 * @param name  the candidate name
-	 * @param alias the candidate alias
-	 * @see #registerAlias
-	 * @see #hasAlias
 	 */
 	protected void checkForAliasCircle(String name, String alias) {
 		if (hasAlias(alias, name)) {

@@ -29,20 +29,6 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
-/**
- * Convenience methods operating on bean factories, in particular
- * on the {@link ListableBeanFactory} interface.
- *
- * <p>Returns bean counts, bean names or bean instances,
- * taking into account the nesting hierarchy of a bean factory
- * (which the methods defined on the ListableBeanFactory interface don't,
- * in contrast to the methods defined on the BeanFactory interface).
- *
- * @author Rod Johnson
- * @author Juergen Hoeller
- * @author Chris Beams
- * @since 04.07.2003
- */
 public abstract class BeanFactoryUtils {
 
 	/**

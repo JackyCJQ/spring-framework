@@ -30,16 +30,6 @@ import java.nio.file.StandardOpenOption;
 
 import org.springframework.util.ResourceUtils;
 
-/**
- * Abstract base class for resources which resolve URLs into File references,
- * such as {@link UrlResource} or {@link ClassPathResource}.
- *
- * <p>Detects the "file" protocol as well as the JBoss "vfs" protocol in URLs,
- * resolving file system references accordingly.
- *
- * @author Juergen Hoeller
- * @since 3.0
- */
 public abstract class AbstractFileResolvingResource extends AbstractResource {
 
 	@Override

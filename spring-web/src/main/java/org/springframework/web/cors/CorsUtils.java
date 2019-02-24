@@ -22,6 +22,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 
 /**
+ * 跨域处理
  * Utility class for CORS request handling based on the
  * <a href="http://www.w3.org/TR/cors/">CORS W3C recommandation</a>.
  *

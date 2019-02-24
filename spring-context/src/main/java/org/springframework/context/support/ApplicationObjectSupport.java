@@ -48,24 +48,16 @@ import org.springframework.util.Assert;
  */
 public abstract class ApplicationObjectSupport implements ApplicationContextAware {
 
-	/**
-	 * Logger that is available to subclasses.
-	 */
 	protected final Log logger = LogFactory.getLog(getClass());
 
-	/**
-	 * ApplicationContext this object runs in.
-	 */
 	@Nullable
 	private ApplicationContext applicationContext;
 
-	/**
-	 * MessageSourceAccessor for easy message access.
-	 */
 	@Nullable
 	private MessageSourceAccessor messageSourceAccessor;
 
 
+	//在启动的时候注入进来
 	@Override
 	public final void setApplicationContext(@Nullable ApplicationContext context) throws BeansException {
 		//如果没有要求注入
@@ -101,7 +93,7 @@ public abstract class ApplicationObjectSupport implements ApplicationContextAwar
 		return ApplicationContext.class;
 	}
 
-	//被子类重写
+	//初始化容器
 	protected void initApplicationContext(ApplicationContext context) throws BeansException {
 		initApplicationContext();
 	}

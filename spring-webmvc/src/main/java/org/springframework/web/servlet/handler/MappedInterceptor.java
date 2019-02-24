@@ -30,7 +30,7 @@ import org.springframework.web.servlet.ModelAndView;
  * Contains and delegates calls to a {@link HandlerInterceptor} along with
  * include (and optionally exclude) path patterns to which the interceptor should apply.
  * Also provides matching logic to test if the interceptor applies to a given request path.
- *
+ * <p>
  * <p>A MappedInterceptor can be registered directly with any
  * {@link org.springframework.web.servlet.handler.AbstractHandlerMethodMapping}.
  * Furthermore, beans of type {@code MappedInterceptor} are automatically detected by
@@ -49,30 +49,20 @@ public final class MappedInterceptor implements HandlerInterceptor {
 
 	@Nullable
 	private final String[] excludePatterns;
-
+	//被代理的
 	private final HandlerInterceptor interceptor;
 
 	@Nullable
 	private PathMatcher pathMatcher;
 
 
-	/**
-	 * Create a new MappedInterceptor instance.
-	 * @param includePatterns the path patterns to map (empty for matching to all paths)
-	 * @param interceptor the HandlerInterceptor instance to map to the given patterns
-	 */
 	public MappedInterceptor(@Nullable String[] includePatterns, HandlerInterceptor interceptor) {
 		this(includePatterns, null, interceptor);
 	}
 
-	/**
-	 * Create a new MappedInterceptor instance.
-	 * @param includePatterns the path patterns to map (empty for matching to all paths)
-	 * @param excludePatterns the path patterns to exclude (empty for no specific excludes)
-	 * @param interceptor the HandlerInterceptor instance to map to the given patterns
-	 */
+
 	public MappedInterceptor(@Nullable String[] includePatterns, @Nullable String[] excludePatterns,
-			HandlerInterceptor interceptor) {
+							 HandlerInterceptor interceptor) {
 
 		this.includePatterns = includePatterns;
 		this.excludePatterns = excludePatterns;
@@ -80,23 +70,13 @@ public final class MappedInterceptor implements HandlerInterceptor {
 	}
 
 
-	/**
-	 * Create a new MappedInterceptor instance.
-	 * @param includePatterns the path patterns to map (empty for matching to all paths)
-	 * @param interceptor the WebRequestInterceptor instance to map to the given patterns
-	 */
 	public MappedInterceptor(@Nullable String[] includePatterns, WebRequestInterceptor interceptor) {
 		this(includePatterns, null, interceptor);
 	}
 
-	/**
-	 * Create a new MappedInterceptor instance.
-	 * @param includePatterns the path patterns to map (empty for matching to all paths)
-	 * @param excludePatterns the path patterns to exclude (empty for no specific excludes)
-	 * @param interceptor the WebRequestInterceptor instance to map to the given patterns
-	 */
+
 	public MappedInterceptor(@Nullable String[] includePatterns, @Nullable String[] excludePatterns,
-			WebRequestInterceptor interceptor) {
+							 WebRequestInterceptor interceptor) {
 
 		this(includePatterns, excludePatterns, new WebRequestHandlerInterceptorAdapter(interceptor));
 	}
@@ -113,17 +93,11 @@ public final class MappedInterceptor implements HandlerInterceptor {
 		this.pathMatcher = pathMatcher;
 	}
 
-	/**
-	 * The configured PathMatcher, or {@code null} if none.
-	 */
 	@Nullable
 	public PathMatcher getPathMatcher() {
 		return this.pathMatcher;
 	}
 
-	/**
-	 * The path into the application the interceptor is mapped to.
-	 */
 	@Nullable
 	public String[] getPathPatterns() {
 		return this.includePatterns;
@@ -139,7 +113,8 @@ public final class MappedInterceptor implements HandlerInterceptor {
 
 	/**
 	 * Determine a match for the given lookup path.
-	 * @param lookupPath the current request path
+	 *
+	 * @param lookupPath  the current request path
 	 * @param pathMatcher a path matcher for path pattern matching
 	 * @return {@code true} if the interceptor applies to the given request path
 	 */
@@ -163,6 +138,7 @@ public final class MappedInterceptor implements HandlerInterceptor {
 		return false;
 	}
 
+	//实际的三个方法
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
@@ -172,14 +148,14 @@ public final class MappedInterceptor implements HandlerInterceptor {
 
 	@Override
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
-			@Nullable ModelAndView modelAndView) throws Exception {
+						   @Nullable ModelAndView modelAndView) throws Exception {
 
 		this.interceptor.postHandle(request, response, handler, modelAndView);
 	}
 
 	@Override
 	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler,
-			@Nullable Exception ex) throws Exception {
+								@Nullable Exception ex) throws Exception {
 
 		this.interceptor.afterCompletion(request, response, handler, ex);
 	}

@@ -107,11 +107,11 @@ public class DispatcherServlet extends FrameworkServlet {
 
 
 	public static final String EXCEPTION_ATTRIBUTE = DispatcherServlet.class.getName() + ".EXCEPTION";
-	//单独配置的一个属性
+
 	public static final String PAGE_NOT_FOUND_LOG_CATEGORY = "org.springframework.web.servlet.PageNotFound";
 
 	/**
-	 * 系统默认的配置文件的名称
+	 * 系统默认的配置文件的名称，里面配置了默认的各个组件处理器
 	 */
 	private static final String DEFAULT_STRATEGIES_PATH = "DispatcherServlet.properties";
 
@@ -148,8 +148,9 @@ public class DispatcherServlet extends FrameworkServlet {
 
 	private boolean detectAllViewResolvers = true;
 
+	//这里是不是通过返回错误页面来处理？
 	private boolean throwExceptionIfNoHandlerFound = false;
-    //对于include请求
+	//对于include请求
 	private boolean cleanupAfterInclude = true;
 
 	//9大组件的引用
@@ -182,7 +183,6 @@ public class DispatcherServlet extends FrameworkServlet {
 
 
 	/**
-	 * 自己解析xml文件，生成
 	 * Create a new {@code DispatcherServlet} that will create its own internal web
 	 * application context based on defaults and values provided through servlet
 	 * init-params. Typically used in Servlet 2.5 or earlier environments, where the only
@@ -230,13 +230,13 @@ public class DispatcherServlet extends FrameworkServlet {
 	}
 
 	public void setCleanupAfterInclude(boolean cleanupAfterInclude) {
+
 		this.cleanupAfterInclude = cleanupAfterInclude;
 	}
 
 
 	/**
 	 * 刷新容器，开始初始化九大组件
-	 * This implementation calls {@link #initStrategies}.
 	 */
 	@Override
 	protected void onRefresh(ApplicationContext context) {
@@ -299,7 +299,7 @@ public class DispatcherServlet extends FrameworkServlet {
 				logger.debug("Detected " + this.localeResolver.getClass().getSimpleName());
 			}
 		} catch (NoSuchBeanDefinitionException ex) {
-			// We need to use the default. 从配置文件中获取默认的配置
+			// We need to use the default.
 			this.localeResolver = getDefaultStrategy(context, LocaleResolver.class);
 			if (logger.isTraceEnabled()) {
 				logger.trace("No LocaleResolver '" + LOCALE_RESOLVER_BEAN_NAME +
@@ -338,7 +338,7 @@ public class DispatcherServlet extends FrameworkServlet {
 	 */
 	private void initHandlerMappings(ApplicationContext context) {
 		this.handlerMappings = null;
-		//如果是自动扫描，获取容器中所有
+		//默认是获取所有的
 		if (this.detectAllHandlerMappings) {
 			// Find all HandlerMappings in the ApplicationContext, including ancestor contexts.
 			Map<String, HandlerMapping> matchingBeans =
@@ -603,6 +603,7 @@ public class DispatcherServlet extends FrameworkServlet {
 		//获取默认的类的路径
 		String value = defaultStrategies.getProperty(key);
 		if (value != null) {
+			//通过,来进行切割
 			String[] classNames = StringUtils.commaDelimitedListToStringArray(value);
 			List<T> strategies = new ArrayList<>(classNames.length);
 			for (String className : classNames) {
@@ -655,20 +656,19 @@ public class DispatcherServlet extends FrameworkServlet {
 		// Keep a snapshot of the request attributes in case of an include,
 		// to be able to restore the original attributes after the include.
 		Map<String, Object> attributesSnapshot = null;
-		//如果是include请求
+		//如果是include请求，servlet中会配置这个属性 javax.servlet.include.request_uri
 		if (WebUtils.isIncludeRequest(request)) {
 			attributesSnapshot = new HashMap<>();
 			Enumeration<?> attrNames = request.getAttributeNames();
 			while (attrNames.hasMoreElements()) {
 				String attrName = (String) attrNames.nextElement();
-				//做一个属性的快照
+				//把系统属性做一个保存
 				if (this.cleanupAfterInclude || attrName.startsWith(DEFAULT_STRATEGIES_PREFIX)) {
 					attributesSnapshot.put(attrName, request.getAttribute(attrName));
 				}
 			}
 		}
-		//可以直接从request中获取这些属性
-		//设置上下文环境的key和value
+		//设置上下文环境的key
 		request.setAttribute(WEB_APPLICATION_CONTEXT_ATTRIBUTE, getWebApplicationContext());
 		//设置本地解析器key和value
 		request.setAttribute(LOCALE_RESOLVER_ATTRIBUTE, this.localeResolver);
@@ -677,7 +677,7 @@ public class DispatcherServlet extends FrameworkServlet {
 		//设置主题资源key和value
 		request.setAttribute(THEME_SOURCE_ATTRIBUTE, getThemeSource());
 
-		//如果是flashMap,在额外处理一下
+		//如果是flashMap,处理redirect属性，应该是肯定存在的
 		if (this.flashMapManager != null) {
 			FlashMap inputFlashMap = this.flashMapManager.retrieveAndUpdate(request, response);
 			//如果存在FlashMap属性,则放到request中
@@ -779,6 +779,7 @@ public class DispatcherServlet extends FrameworkServlet {
 
 				// 2。Determine handler for the current request.
 				mappedHandler = getHandler(processedRequest);
+
 				if (mappedHandler == null) {
 					noHandlerFound(processedRequest, response);
 					return;

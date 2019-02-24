@@ -17,7 +17,7 @@
 package org.springframework.core;
 
 /**
- * Common interface for managing aliases. Serves as super-interface for
+ * Common interface for managing aliases.
  */
 public interface AliasRegistry {
 

@@ -41,7 +41,7 @@ public abstract class WebApplicationObjectSupport extends ApplicationObjectSuppo
 	@Nullable
 	private ServletContext servletContext;
 
-	//注入servlet上下文
+	//容器启动的时候 注入servlet上下文
 	@Override
 	public final void setServletContext(ServletContext servletContext) {
 		if (servletContext != this.servletContext) {
@@ -68,7 +68,7 @@ public abstract class WebApplicationObjectSupport extends ApplicationObjectSuppo
 			}
 		}
 	}
-
+	//这里初始化的时候交给了子类去处理
 	protected void initServletContext(ServletContext servletContext) {
 	}
 
