@@ -19,16 +19,11 @@ package org.springframework.beans.factory;
 import org.springframework.beans.BeansException;
 
 /**
- * Defines a factory which can return an Object instance
- * (possibly shared or independent) when invoked.
+ * 对象工厂
  */
 @FunctionalInterface
 public interface ObjectFactory<T> {
 
-	/**
-	 * Return an instance (possibly shared or independent)
-	 * of the object managed by this factory.
-	 */
 	T getObject() throws BeansException;
 
 }

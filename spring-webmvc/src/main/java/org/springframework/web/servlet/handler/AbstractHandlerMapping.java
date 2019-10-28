@@ -68,7 +68,7 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 	private PathMatcher pathMatcher = new AntPathMatcher();
 	//定义的拦截器
 	private final List<Object> interceptors = new ArrayList<>();
-	//应该是这个mapping使用的拦截器
+	//应该是这个mapping适用的拦截器
 	private final List<HandlerInterceptor> adaptedInterceptors = new ArrayList<>();
 
 	private final UrlBasedCorsConfigurationSource globalCorsConfigSource = new UrlBasedCorsConfigurationSource();
@@ -179,6 +179,7 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 
 
 	/**
+	 * 主要是初始化了拦截器
 	 * Initializes the interceptors.
 	 *
 	 * @see #extendInterceptors(java.util.List)
@@ -194,6 +195,7 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 	protected void extendInterceptors(List<Object> interceptors) {
 	}
 
+	//获取所有的MappedInterceptor
 	protected void detectMappedInterceptors(List<HandlerInterceptor> mappedInterceptors) {
 		mappedInterceptors.addAll(
 				BeanFactoryUtils.beansOfTypeIncludingAncestors(
@@ -211,7 +213,7 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 			}
 		}
 	}
-
+    //全部转换为HandlerInterceptor
 	protected HandlerInterceptor adaptInterceptor(Object interceptor) {
 		//可以定义两种interceptor
 		if (interceptor instanceof HandlerInterceptor) {
@@ -252,7 +254,7 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 	@Nullable
 	public final HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception {
 		Object handler = getHandlerInternal(request);
-		//如果不存在就返回默认的handle
+		//如果不存在就返回默认的handler
 		if (handler == null) {
 			handler = getDefaultHandler();
 		}
@@ -265,7 +267,7 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 			String handlerName = (String) handler;
 			handler = obtainApplicationContext().getBean(handlerName);
 		}
-
+        //获取对应的HandlerExecutionChain
 		HandlerExecutionChain executionChain = getHandlerExecutionChain(handler, request);
 
 		if (logger.isTraceEnabled()) {
@@ -273,7 +275,7 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 		} else if (logger.isDebugEnabled() && !request.getDispatcherType().equals(DispatcherType.ASYNC)) {
 			logger.debug("Mapped to " + executionChain.getHandler());
 		}
-		//判断是否是跨域处理
+		//判断是否是跨域处理，如果是的话在进行跨域的处理
 		if (CorsUtils.isCorsRequest(request)) {
 			CorsConfiguration globalConfig = this.globalCorsConfigSource.getCorsConfiguration(request);
 			CorsConfiguration handlerConfig = getCorsConfiguration(handler, request);
@@ -288,7 +290,7 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 	@Nullable
 	protected abstract Object getHandlerInternal(HttpServletRequest request) throws Exception;
 
-
+    //把添加符合条件的拦截器
 	protected HandlerExecutionChain getHandlerExecutionChain(Object handler, HttpServletRequest request) {
 		HandlerExecutionChain chain = (handler instanceof HandlerExecutionChain ?
 				(HandlerExecutionChain) handler : new HandlerExecutionChain(handler));

@@ -26,12 +26,6 @@ package org.springframework.beans.factory;
  * For a list of all bean lifecycle methods, see the
  * {@link BeanFactory BeanFactory javadocs}.
  *
- * @author Rod Johnson
- * @see BeanNameAware
- * @see BeanFactoryAware
- * @see BeanFactory
- * @see org.springframework.beans.factory.support.RootBeanDefinition#getInitMethodName
- * @see org.springframework.context.ApplicationContextAware
  */
 public interface InitializingBean {
 

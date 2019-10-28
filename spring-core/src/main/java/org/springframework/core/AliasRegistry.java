@@ -21,25 +21,12 @@ package org.springframework.core;
  */
 public interface AliasRegistry {
 
-	/**
-	 * Given a name, register an alias for it.
-	 */
 	void registerAlias(String name, String alias);
 
-	/**
-	 * Remove the specified alias from this registry.
-	 */
 	void removeAlias(String alias);
 
-	/**
-	 * Determine whether this given name is defines as an alias
-	 * (as opposed to the name of an actually registered component).
-	 */
 	boolean isAlias(String name);
 
-	/**
-	 * Return the aliases for the given name, if defined.
-	 */
 	String[] getAliases(String name);
 
 }

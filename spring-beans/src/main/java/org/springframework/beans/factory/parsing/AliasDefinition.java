@@ -36,12 +36,6 @@ public class AliasDefinition implements BeanMetadataElement {
 	@Nullable
 	private final Object source;
 
-
-	/**
-	 * Create a new AliasDefinition.
-	 * @param beanName the canonical name of the bean
-	 * @param alias the alias registered for the bean
-	 */
 	public AliasDefinition(String beanName, String alias) {
 		this(beanName, alias, null);
 	}
@@ -61,16 +55,10 @@ public class AliasDefinition implements BeanMetadataElement {
 	}
 
 
-	/**
-	 * Return the canonical name of the bean.
-	 */
 	public final String getBeanName() {
 		return this.beanName;
 	}
 
-	/**
-	 * Return the alias registered for the bean.
-	 */
 	public final String getAlias() {
 		return this.alias;
 	}

@@ -36,10 +36,6 @@ import org.springframework.web.util.WebUtils;
  * <p>Accesses objects from servlet request and HTTP session scope,
  * with no distinction between "session" and "global session".
  *
- * @author Juergen Hoeller
- * @since 2.0
- * @see javax.servlet.ServletRequest#getAttribute
- * @see javax.servlet.http.HttpSession#getAttribute
  */
 public class ServletRequestAttributes extends AbstractRequestAttributes {
 
@@ -59,7 +55,7 @@ public class ServletRequestAttributes extends AbstractRequestAttributes {
 		immutableValueTypes.add(String.class);
 	}
 
-
+     //存放本次的请求
 	private final HttpServletRequest request;
 
 	@Nullable
@@ -71,36 +67,21 @@ public class ServletRequestAttributes extends AbstractRequestAttributes {
 	private final Map<String, Object> sessionAttributesToUpdate = new ConcurrentHashMap<>(1);
 
 
-	/**
-	 * Create a new ServletRequestAttributes instance for the given request.
-	 * @param request current HTTP request
-	 */
 	public ServletRequestAttributes(HttpServletRequest request) {
 		Assert.notNull(request, "Request must not be null");
 		this.request = request;
 	}
 
-	/**
-	 * Create a new ServletRequestAttributes instance for the given request.
-	 * @param request current HTTP request
-	 * @param response current HTTP response (for optional exposure)
-	 */
 	public ServletRequestAttributes(HttpServletRequest request, @Nullable HttpServletResponse response) {
 		this(request);
 		this.response = response;
 	}
 
 
-	/**
-	 * Exposes the native {@link HttpServletRequest} that we're wrapping.
-	 */
 	public final HttpServletRequest getRequest() {
 		return this.request;
 	}
 
-	/**
-	 * Exposes the native {@link HttpServletResponse} that we're wrapping (if any).
-	 */
 	@Nullable
 	public final HttpServletResponse getResponse() {
 		return this.response;
@@ -112,6 +93,7 @@ public class ServletRequestAttributes extends AbstractRequestAttributes {
 	 */
 	@Nullable
 	protected final HttpSession getSession(boolean allowCreate) {
+		//如果请求还存活
 		if (isRequestActive()) {
 			HttpSession session = this.request.getSession(allowCreate);
 			this.session = session;
@@ -135,6 +117,7 @@ public class ServletRequestAttributes extends AbstractRequestAttributes {
 	}
 
 	private HttpSession obtainSession() {
+		//不存在就会创建一个session
 		HttpSession session = getSession(true);
 		Assert.state(session != null, "No HttpSession");
 		return session;

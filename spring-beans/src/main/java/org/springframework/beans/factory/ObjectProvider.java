@@ -38,25 +38,8 @@ import org.springframework.lang.Nullable;
  */
 public interface ObjectProvider<T> extends ObjectFactory<T>, Iterable<T> {
 
-	/**
-	 * Return an instance (possibly shared or independent) of the object
-	 * managed by this factory.
-	 * <p>Allows for specifying explicit construction arguments, along the
-	 * lines of {@link BeanFactory#getBean(String, Object...)}.
-	 * @param args arguments to use when creating a corresponding instance
-	 * @return an instance of the bean
-	 * @throws BeansException in case of creation errors
-	 * @see #getObject()
-	 */
 	T getObject(Object... args) throws BeansException;
 
-	/**
-	 * Return an instance (possibly shared or independent) of the object
-	 * managed by this factory.
-	 * @return an instance of the bean, or {@code null} if not available
-	 * @throws BeansException in case of creation errors
-	 * @see #getObject()
-	 */
 	@Nullable
 	T getIfAvailable() throws BeansException;
 

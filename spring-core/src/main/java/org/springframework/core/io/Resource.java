@@ -26,6 +26,9 @@ import java.nio.channels.ReadableByteChannel;
 
 import org.springframework.lang.Nullable;
 
+/**
+ * 代表着资源
+ */
 public interface Resource extends InputStreamSource {
 
 	boolean exists();

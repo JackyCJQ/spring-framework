@@ -37,11 +37,6 @@ import org.springframework.lang.Nullable;
  * <p>In addition to standard application context lifecycle capabilities,
  * WebApplicationContext implementations need to detect {@link ServletContextAware}
  * beans and invoke the {@code setServletContext} method accordingly.
- *
- * @author Rod Johnson
- * @author Juergen Hoeller
- * @see ServletContextAware#setServletContext
- * @since January 19, 2001
  */
 public interface WebApplicationContext extends ApplicationContext {
 
@@ -50,7 +45,6 @@ public interface WebApplicationContext extends ApplicationContext {
 
 	//指定定义bean的范围
 	String SCOPE_REQUEST = "request";
-
 
 	String SCOPE_SESSION = "session";
 
@@ -65,7 +59,6 @@ public interface WebApplicationContext extends ApplicationContext {
 
 	/**
 	 * 其实就是多了获取ServletContext 能够和servletContext交互
-	 * Return the standard Servlet API ServletContext for this application.
 	 */
 	@Nullable
 	ServletContext getServletContext();

@@ -41,10 +41,6 @@ import org.springframework.util.Assert;
  * <p>
  * <p>Many framework classes are derived from this class, particularly
  * within the web support.
- *
- * @author Rod Johnson
- * @author Juergen Hoeller
- * @see org.springframework.web.context.support.WebApplicationObjectSupport
  */
 public abstract class ApplicationObjectSupport implements ApplicationContextAware {
 
@@ -76,7 +72,6 @@ public abstract class ApplicationObjectSupport implements ApplicationContextAwar
 			//注入之后开始进行初始化
 			initApplicationContext(context);
 		} else {
-			//拒绝重复初始化，如果已经注入过了，拒绝在此设置
 			if (this.applicationContext != context) {
 				throw new ApplicationContextException(
 						"Cannot reinitialize with different application context: current one is [" +
@@ -101,6 +96,7 @@ public abstract class ApplicationObjectSupport implements ApplicationContextAwar
 	//被子类重写
 	protected void initApplicationContext() throws BeansException {
 	}
+
 	@Nullable
 	public final ApplicationContext getApplicationContext() throws IllegalStateException {
 		//如果要求注入 但是为空的时候就报错了

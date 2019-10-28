@@ -169,25 +169,9 @@ public interface ConfigurableApplicationContext extends ApplicationContext, Life
 	 */
 	void registerShutdownHook();
 
-	/**
-	 * Close this application context, releasing all resources and locks that the
-	 * implementation might hold. This includes destroying all cached singleton beans.
-	 * <p>Note: Does <i>not</i> invoke {@code close} on a parent context;
-	 * parent contexts have their own, independent lifecycle.
-	 * <p>This method can be called multiple times without side effects: Subsequent
-	 * {@code close} calls on an already closed context will be ignored.
-	 */
 	@Override
 	void close();
 
-	/**
-	 * Determine whether this application context is active, that is,
-	 * whether it has been refreshed at least once and has not been closed yet.
-	 * @return whether the context is still active
-	 * @see #refresh()
-	 * @see #close()
-	 * @see #getBeanFactory()
-	 */
 	boolean isActive();
 
 	/**

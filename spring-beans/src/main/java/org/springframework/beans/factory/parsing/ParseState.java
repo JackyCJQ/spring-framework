@@ -24,19 +24,14 @@ import org.springframework.lang.Nullable;
  * Simple {@link LinkedList}-based structure for tracking the logical position during
  * a parsing process. {@link Entry entries} are added to the LinkedList at
  * each point during the parse phase in a reader-specific manner.
- *
+ * <p>
  * <p>Calling {@link #toString()} will render a tree-style view of the current logical
  * position in the parse phase. This representation is intended for use in
  * error messages.
- *
- * @author Rob Harrop
- * @since 2.0
  */
 public final class ParseState {
 
-	/**
-	 * Tab character used when rendering the tree-style representation.
-	 */
+
 	private static final char TAB = '\t';
 
 	/**
@@ -44,50 +39,31 @@ public final class ParseState {
 	 */
 	private final LinkedList<Entry> state;
 
-
-	/**
-	 * Create a new {@code ParseState} with an empty {@link LinkedList}.
-	 */
 	public ParseState() {
 		this.state = new LinkedList<>();
 	}
 
-	/**
-	 * Create a new {@code ParseState} whose {@link LinkedList} is a {@link Object#clone clone}
-	 * of that of the passed in {@code ParseState}.
-	 */
 	@SuppressWarnings("unchecked")
 	private ParseState(ParseState other) {
 		this.state = (LinkedList<Entry>) other.state.clone();
 	}
 
 
-	/**
-	 * Add a new {@link Entry} to the {@link LinkedList}.
-	 */
 	public void push(Entry entry) {
 		this.state.push(entry);
 	}
 
-	/**
-	 * Remove an {@link Entry} from the {@link LinkedList}.
-	 */
 	public void pop() {
 		this.state.pop();
 	}
 
-	/**
-	 * Return the {@link Entry} currently at the top of the {@link LinkedList} or
-	 * {@code null} if the {@link LinkedList} is empty.
-	 */
 	@Nullable
 	public Entry peek() {
 		return this.state.peek();
 	}
 
 	/**
-	 * Create a new instance of {@link ParseState} which is an independent snapshot
-	 * of this instance.
+	 *根据当前状态创建一个快照
 	 */
 	public ParseState snapshot() {
 		return new ParseState(this);

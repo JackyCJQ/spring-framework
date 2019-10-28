@@ -26,10 +26,6 @@ import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.support.WebContentGenerator;
 
-/**
- * Abstract base class for {@link HandlerAdapter} implementations that support
- * handlers of type {@link HandlerMethod}.
- */
 public abstract class AbstractHandlerMethodAdapter extends WebContentGenerator implements HandlerAdapter, Ordered {
 
 	//优先级最高
@@ -41,13 +37,7 @@ public abstract class AbstractHandlerMethodAdapter extends WebContentGenerator i
 		super(false);
 	}
 
-
-	/**
-	 * Specify the order value for this HandlerAdapter bean.
-	 * <p>The default value is {@code Ordered.LOWEST_PRECEDENCE}, meaning non-ordered.
-	 *
-	 * @see org.springframework.core.Ordered#getOrder()
-	 */
+	//设置优先级
 	public void setOrder(int order) {
 		this.order = order;
 	}
@@ -58,28 +48,15 @@ public abstract class AbstractHandlerMethodAdapter extends WebContentGenerator i
 	}
 
 
-	/**
-	 * This implementation expects the handler to be an {@link HandlerMethod}.
-	 *
-	 * @param handler the handler instance to check
-	 * @return whether or not this adapter can adapt the given handler
-	 */
 	@Override
 	public final boolean supports(Object handler) {
 		return (handler instanceof HandlerMethod && supportsInternal((HandlerMethod) handler));
 	}
 
-	/**
-	 * Given a handler method, return whether or not this adapter can support it.
-	 *
-	 * @param handlerMethod the handler method to check
-	 * @return whether or not this adapter can adapt the given method
-	 */
+	//具体由子类去实现
 	protected abstract boolean supportsInternal(HandlerMethod handlerMethod);
 
-	/**
-	 * This implementation expects the handler to be an {@link HandlerMethod}.
-	 */
+	//具体适配实现还是由子类去实现
 	@Override
 	@Nullable
 	public final ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler)
@@ -88,36 +65,16 @@ public abstract class AbstractHandlerMethodAdapter extends WebContentGenerator i
 		return handleInternal(request, response, (HandlerMethod) handler);
 	}
 
-	/**
-	 * Use the given handler method to handle the request.
-	 *
-	 * @param request       current HTTP request
-	 * @param response      current HTTP response
-	 * @param handlerMethod handler method to use. This object must have previously been passed to the
-	 *                      {@link #supportsInternal(HandlerMethod)} this interface, which must have returned {@code true}.
-	 * @return a ModelAndView object with the name of the view and the required model data,
-	 * or {@code null} if the request has been handled directly
-	 * @throws Exception in case of errors
-	 */
 	@Nullable
 	protected abstract ModelAndView handleInternal(HttpServletRequest request,
 												   HttpServletResponse response, HandlerMethod handlerMethod) throws Exception;
 
-	/**
-	 * This implementation expects the handler to be an {@link HandlerMethod}.
-	 */
 	@Override
 	public final long getLastModified(HttpServletRequest request, Object handler) {
 		return getLastModifiedInternal(request, (HandlerMethod) handler);
 	}
 
-	/**
-	 * Same contract as for {@link javax.servlet.http.HttpServlet#getLastModified(HttpServletRequest)}.
-	 *
-	 * @param request       current HTTP request
-	 * @param handlerMethod handler method to use
-	 * @return the lastModified value for the given handler
-	 */
+	//还是由具体的子类去实现
 	protected abstract long getLastModifiedInternal(HttpServletRequest request, HandlerMethod handlerMethod);
 
 }

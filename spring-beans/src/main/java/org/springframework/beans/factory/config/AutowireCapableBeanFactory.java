@@ -61,6 +61,7 @@ import org.springframework.lang.Nullable;
  */
 public interface AutowireCapableBeanFactory extends BeanFactory {
 
+	//自动注入类型
 	int AUTOWIRE_NO = 0;
 
 	int AUTOWIRE_BY_NAME = 1;
@@ -196,40 +197,12 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 	 */
 	Object initializeBean(Object existingBean, String beanName) throws BeansException;
 
-	/**
-	 * Apply {@link BeanPostProcessor BeanPostProcessors} to the given existing bean
-	 * instance, invoking their {@code postProcessBeforeInitialization} methods.
-	 * The returned bean instance may be a wrapper around the original.
-	 * @param existingBean the new bean instance
-	 * @param beanName the name of the bean
-	 * @return the bean instance to use, either the original or a wrapped one
-	 * @throws BeansException if any post-processing failed
-	 * @see BeanPostProcessor#postProcessBeforeInitialization
-	 */
 	Object applyBeanPostProcessorsBeforeInitialization(Object existingBean, String beanName)
 			throws BeansException;
 
-	/**
-	 * Apply {@link BeanPostProcessor BeanPostProcessors} to the given existing bean
-	 * instance, invoking their {@code postProcessAfterInitialization} methods.
-	 * The returned bean instance may be a wrapper around the original.
-	 * @param existingBean the new bean instance
-	 * @param beanName the name of the bean
-	 * @return the bean instance to use, either the original or a wrapped one
-	 * @throws BeansException if any post-processing failed
-	 * @see BeanPostProcessor#postProcessAfterInitialization
-	 */
 	Object applyBeanPostProcessorsAfterInitialization(Object existingBean, String beanName)
 			throws BeansException;
 
-	/**
-	 * Destroy the given bean instance (typically coming from {@link #createBean}),
-	 * applying the {@link org.springframework.beans.factory.DisposableBean} contract as well as
-	 * registered {@link DestructionAwareBeanPostProcessor DestructionAwareBeanPostProcessors}.
-	 * <p>Any exception that arises during destruction should be caught
-	 * and logged instead of propagated to the caller of this method.
-	 * @param existingBean the bean instance to destroy
-	 */
 	void destroyBean(Object existingBean);
 
 

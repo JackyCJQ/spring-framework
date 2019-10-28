@@ -35,7 +35,7 @@ public class ContextLoaderListener extends ContextLoader implements ServletConte
 
 
 	/**
-	 * ServletContextEvent 对ServletContext的一个简单封装
+	 *  在servlet容器初始化的时候进行一些操作
 	 */
 	@Override
 	public void contextInitialized(ServletContextEvent event) {

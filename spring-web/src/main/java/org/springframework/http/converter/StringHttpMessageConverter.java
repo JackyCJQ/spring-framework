@@ -31,22 +31,14 @@ import org.springframework.util.StreamUtils;
 
 /**
  * Implementation of {@link HttpMessageConverter} that can read and write strings.
- *
+ * <p>
  * <p>By default, this converter supports all media types ({@code &#42;&#47;&#42;}),
  * and writes with a {@code Content-Type} of {@code text/plain}. This can be overridden
  * by setting the {@link #setSupportedMediaTypes supportedMediaTypes} property.
- *
- * @author Arjen Poutsma
- * @author Juergen Hoeller
- * @since 3.0
  */
 public class StringHttpMessageConverter extends AbstractHttpMessageConverter<String> {
 
-	/**
-	 * The default charset used by the converter.
-	 */
 	public static final Charset DEFAULT_CHARSET = StandardCharsets.ISO_8859_1;
-
 
 	@Nullable
 	private volatile List<Charset> availableCharsets;
@@ -56,6 +48,7 @@ public class StringHttpMessageConverter extends AbstractHttpMessageConverter<Str
 
 	/**
 	 * A default constructor that uses {@code "ISO-8859-1"} as the default charset.
+	 *
 	 * @see #StringHttpMessageConverter(Charset)
 	 */
 	public StringHttpMessageConverter() {
@@ -87,6 +80,7 @@ public class StringHttpMessageConverter extends AbstractHttpMessageConverter<Str
 
 	@Override
 	protected String readInternal(Class<? extends String> clazz, HttpInputMessage inputMessage) throws IOException {
+		//请求头中是什么字符集，就用什么字符集
 		Charset charset = getContentTypeCharset(inputMessage.getHeaders().getContentType());
 		return StreamUtils.copyToString(inputMessage.getBody(), charset);
 	}
@@ -102,6 +96,7 @@ public class StringHttpMessageConverter extends AbstractHttpMessageConverter<Str
 		if (this.writeAcceptCharset) {
 			outputMessage.getHeaders().setAcceptCharset(getAcceptedCharsets());
 		}
+		//输出体中的字符
 		Charset charset = getContentTypeCharset(outputMessage.getHeaders().getContentType());
 		StreamUtils.copy(str, charset, outputMessage.getBody());
 	}
@@ -111,6 +106,7 @@ public class StringHttpMessageConverter extends AbstractHttpMessageConverter<Str
 	 * Return the list of supported {@link Charset Charsets}.
 	 * <p>By default, returns {@link Charset#availableCharsets()}.
 	 * Can be overridden in subclasses.
+	 *
 	 * @return the list of accepted charsets
 	 */
 	protected List<Charset> getAcceptedCharsets() {
@@ -125,8 +121,7 @@ public class StringHttpMessageConverter extends AbstractHttpMessageConverter<Str
 	private Charset getContentTypeCharset(@Nullable MediaType contentType) {
 		if (contentType != null && contentType.getCharset() != null) {
 			return contentType.getCharset();
-		}
-		else {
+		} else {
 			Charset charset = getDefaultCharset();
 			Assert.state(charset != null, "No default charset");
 			return charset;

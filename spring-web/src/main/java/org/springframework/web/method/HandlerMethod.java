@@ -43,34 +43,30 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * {@linkplain #getMethod() method} and a {@linkplain #getBean() bean}.
  * Provides convenient access to method parameters, the method return value,
  * method annotations, etc.
- *
+ * <p>
  * <p>The class may be created with a bean instance or with a bean name
  * (e.g. lazy-init bean, prototype bean). Use {@link #createWithResolvedBean()}
  * to obtain a {@code HandlerMethod} instance with a bean instance resolved
  * through the associated {@link BeanFactory}.
- *
- * @author Arjen Poutsma
- * @author Rossen Stoyanchev
- * @author Juergen Hoeller
- * @author Sam Brannen
- * @since 3.1
  */
 public class HandlerMethod {
 
-	/** Logger that is available to subclasses. */
+	/**
+	 * Logger that is available to subclasses.
+	 */
 	protected final Log logger = LogFactory.getLog(getClass());
-
+    //对应的对象的引用
 	private final Object bean;
-
+    //对应的对应工厂
 	@Nullable
 	private final BeanFactory beanFactory;
-
+    //对应的class类型
 	private final Class<?> beanType;
-
+	//对应的具体方法
 	private final Method method;
-
+    //桥接方法
 	private final Method bridgedMethod;
-
+    //方法中含有的参数
 	private final MethodParameter[] parameters;
 
 	@Nullable
@@ -82,27 +78,31 @@ public class HandlerMethod {
 	@Nullable
 	private HandlerMethod resolvedFromHandlerMethod;
 
+	//接口上携带的注解
 	@Nullable
 	private volatile List<Annotation[][]> interfaceParameterAnnotations;
 
 
-	/**
-	 * Create an instance from a bean instance and a method.
-	 */
 	public HandlerMethod(Object bean, Method method) {
 		Assert.notNull(bean, "Bean is required");
 		Assert.notNull(method, "Method is required");
+		//对应的bean
 		this.bean = bean;
 		this.beanFactory = null;
+		//class文件
 		this.beanType = ClassUtils.getUserClass(bean);
+		//对应的方法
 		this.method = method;
+		//桥接方法
 		this.bridgedMethod = BridgeMethodResolver.findBridgedMethod(method);
+		//
 		this.parameters = initMethodParameters();
 		evaluateResponseStatus();
 	}
 
 	/**
 	 * Create an instance from a bean instance, method name, and parameter types.
+	 *
 	 * @throws NoSuchMethodException when the method cannot be found
 	 */
 	public HandlerMethod(Object bean, String methodName, Class<?>... parameterTypes) throws NoSuchMethodException {
@@ -236,8 +236,9 @@ public class HandlerMethod {
 
 	/**
 	 * Return the specified response status, if any.
-	 * @since 4.3.8
+	 *
 	 * @see ResponseStatus#code()
+	 * @since 4.3.8
 	 */
 	@Nullable
 	protected HttpStatus getResponseStatus() {
@@ -246,8 +247,9 @@ public class HandlerMethod {
 
 	/**
 	 * Return the associated response status reason, if any.
-	 * @since 4.3.8
+	 *
 	 * @see ResponseStatus#reason()
+	 * @since 4.3.8
 	 */
 	@Nullable
 	protected String getResponseStatusReason() {
@@ -280,6 +282,7 @@ public class HandlerMethod {
 	 * if no annotation can be found on the given method itself.
 	 * <p>Also supports <em>merged</em> composed annotations with attribute
 	 * overrides as of Spring Framework 4.2.2.
+	 *
 	 * @param annotationType the type of annotation to introspect the method for
 	 * @return the annotation, or {@code null} if none found
 	 * @see AnnotatedElementUtils#findMergedAnnotation
@@ -291,9 +294,10 @@ public class HandlerMethod {
 
 	/**
 	 * Return whether the parameter is declared with the given annotation type.
+	 *
 	 * @param annotationType the annotation type to look for
-	 * @since 4.3
 	 * @see AnnotatedElementUtils#hasAnnotation
+	 * @since 4.3
 	 */
 	public <A extends Annotation> boolean hasMethodAnnotation(Class<A> annotationType) {
 		return AnnotatedElementUtils.hasAnnotation(this.method, annotationType);
@@ -324,6 +328,7 @@ public class HandlerMethod {
 
 	/**
 	 * Return a short representation of this handler method for log message purposes.
+	 *
 	 * @since 4.3
 	 */
 	public String getShortLogMessage() {

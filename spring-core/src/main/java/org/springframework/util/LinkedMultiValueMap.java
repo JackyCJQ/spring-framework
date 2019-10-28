@@ -26,56 +26,23 @@ import java.util.Set;
 
 import org.springframework.lang.Nullable;
 
-/**
- * Simple implementation of {@link MultiValueMap} that wraps a {@link LinkedHashMap},
- * storing multiple values in a {@link LinkedList}.
- *
- * <p>This Map implementation is generally not thread-safe. It is primarily designed
- * for data structures exposed from request objects, for use in a single thread only.
- *
- * @author Arjen Poutsma
- * @author Juergen Hoeller
- * @since 3.0
- * @param <K> the key type
- * @param <V> the value element type
- */
 public class LinkedMultiValueMap<K, V> implements MultiValueMap<K, V>, Serializable, Cloneable {
 
 	private static final long serialVersionUID = 3801124242820219131L;
-
+	//实际上value就对应一个list就可以简单实现
 	private final Map<K, List<V>> targetMap;
 
-
-	/**
-	 * Create a new LinkedMultiValueMap that wraps a {@link LinkedHashMap}.
-	 */
 	public LinkedMultiValueMap() {
 		this.targetMap = new LinkedHashMap<>();
 	}
 
-	/**
-	 * Create a new LinkedMultiValueMap that wraps a {@link LinkedHashMap}
-	 * with the given initial capacity.
-	 * @param initialCapacity the initial capacity
-	 */
 	public LinkedMultiValueMap(int initialCapacity) {
 		this.targetMap = new LinkedHashMap<>(initialCapacity);
 	}
 
-	/**
-	 * Copy constructor: Create a new LinkedMultiValueMap with the same mappings as
-	 * the specified Map. Note that this will be a shallow copy; its value-holding
-	 * List entries will get reused and therefore cannot get modified independently.
-	 * @param otherMap the Map whose mappings are to be placed in this Map
-	 * @see #clone()
-	 * @see #deepCopy()
-	 */
 	public LinkedMultiValueMap(Map<K, List<V>> otherMap) {
 		this.targetMap = new LinkedHashMap<>(otherMap);
 	}
-
-
-	// MultiValueMap implementation
 
 	@Override
 	@Nullable
@@ -103,6 +70,7 @@ public class LinkedMultiValueMap<K, V> implements MultiValueMap<K, V>, Serializa
 		}
 	}
 
+	//会清空以前的数据
 	@Override
 	public void set(K key, @Nullable V value) {
 		List<V> values = new LinkedList<>();
@@ -115,6 +83,7 @@ public class LinkedMultiValueMap<K, V> implements MultiValueMap<K, V>, Serializa
 		values.forEach(this::set);
 	}
 
+	//取出每一个练表的第一个元素
 	@Override
 	public Map<K, V> toSingleValueMap() {
 		LinkedHashMap<K, V> singleValueMap = new LinkedHashMap<>(this.targetMap.size());
@@ -191,10 +160,7 @@ public class LinkedMultiValueMap<K, V> implements MultiValueMap<K, V>, Serializa
 
 
 	/**
-	 * Create a deep copy of this Map.
-	 * @return a copy of this Map, including a copy of each value-holding List entry
-	 * @since 4.2
-	 * @see #clone()
+	 * 深度copy
 	 */
 	public LinkedMultiValueMap<K, V> deepCopy() {
 		LinkedMultiValueMap<K, V> copy = new LinkedMultiValueMap<>(this.targetMap.size());
@@ -204,10 +170,11 @@ public class LinkedMultiValueMap<K, V> implements MultiValueMap<K, V>, Serializa
 
 	/**
 	 * Create a regular copy of this Map.
+	 *
 	 * @return a shallow copy of this Map, reusing this Map's value-holding List entries
-	 * @since 4.2
 	 * @see LinkedMultiValueMap#LinkedMultiValueMap(Map)
 	 * @see #deepCopy()
+	 * @since 4.2
 	 */
 	@Override
 	public LinkedMultiValueMap<K, V> clone() {

@@ -74,14 +74,6 @@ import org.springframework.util.StringUtils;
  * application context via the {@link #ContextLoader(WebApplicationContext)}
  * constructor, allowing for programmatic configuration in Servlet 3.0+ environments.
  * See {@link org.springframework.web.WebApplicationInitializer} for usage examples.
- *
- * @author Juergen Hoeller
- * @author Colin Sampaleanu
- * @author Sam Brannen
- * @see ContextLoaderListener
- * @see ConfigurableWebApplicationContext
- * @see org.springframework.web.context.support.XmlWebApplicationContext
- * @since 17.02.2003
  */
 public class ContextLoader {
 
@@ -95,27 +87,17 @@ public class ContextLoader {
 
 	public static final String GLOBAL_INITIALIZER_CLASSES_PARAM = "globalInitializerClasses";
 
-	/**
-	 * Any number of these characters are considered delimiters between
-	 * multiple values in a single init-param String value.
-	 */
 	private static final String INIT_PARAM_DELIMITERS = ",; \t\n";
 
-	/**
-	 * Name of the class path resource (relative to the ContextLoader class)
-	 * that defines ContextLoader's default strategy names.
-	 */
 	private static final String DEFAULT_STRATEGIES_PATH = "ContextLoader.properties";
 
 	//默认的配置
 	private static final Properties defaultStrategies;
 
 	static {
-		// Load default strategy implementations from properties file.
-		// This is currently strictly internal and not meant to be customized
-		// by application developers.
 		try {
-			//加载org.springframework.web.context.WebApplicationContext=org.springframework.web.context.support.XmlWebApplicationContext
+			//加载org.springframework.web.context.WebApplicationContext
+			// =org.springframework.web.context.support.XmlWebApplicationContext
 			ClassPathResource resource = new ClassPathResource(DEFAULT_STRATEGIES_PATH, ContextLoader.class);
 			defaultStrategies = PropertiesLoaderUtils.loadProperties(resource);
 		} catch (IOException ex) {
@@ -130,17 +112,9 @@ public class ContextLoader {
 	private static final Map<ClassLoader, WebApplicationContext> currentContextPerThread =
 			new ConcurrentHashMap<>(1);
 
-	/**
-	 * The 'current' WebApplicationContext, if the ContextLoader class is
-	 * deployed in the web app ClassLoader itself.
-	 */
 	@Nullable
 	private static volatile WebApplicationContext currentContext;
 
-
-	/**
-	 * The root WebApplicationContext instance that this loader manages.
-	 */
 	@Nullable
 	private WebApplicationContext context;
 
@@ -181,27 +155,26 @@ public class ContextLoader {
 	 * 开始初始化环境
 	 */
 	public WebApplicationContext initWebApplicationContext(ServletContext servletContext) {
-
-		//如果已经初始化过了 不能在此初始化
+		//如果已经初始化过了 不能在此初始化（如果已经初始化了，会把上下午作为一个属性添加到servletContext）
 		if (servletContext.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE) != null) {
 			throw new IllegalStateException(
 					"Cannot initialize context because there is already a root application context present - " +
 							"check whether you have multiple ContextLoader* definitions in your web.xml!");
 		}
-
 		servletContext.log("Initializing Spring root WebApplicationContext");
 		Log logger = LogFactory.getLog(ContextLoader.class);
 		if (logger.isInfoEnabled()) {
 			logger.info("Root WebApplicationContext: initialization started");
 		}
-		//记录初石化的开始时间
+		//记录初始化的开始时间
 		long startTime = System.currentTimeMillis();
 
 		try {
 			// Store context in local instance variable, to guarantee that
 			// it is available on ServletContext shutdown.
+			//第一次执行的时候，创建一个web上下文
 			if (this.context == null) {
-				//开始初始化
+				//开始初始化，并创建一个xmlWebApplicationContext
 				this.context = createWebApplicationContext(servletContext);
 			}
 			if (this.context instanceof ConfigurableWebApplicationContext) {
@@ -218,8 +191,10 @@ public class ContextLoader {
 					configureAndRefreshWebApplicationContext(cwac, servletContext);
 				}
 			}
+			//把对容器的引用回填到servletContext中
 			servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this.context);
 
+			//如果是当前累加载器加载的
 			ClassLoader ccl = Thread.currentThread().getContextClassLoader();
 			if (ccl == ContextLoader.class.getClassLoader()) {
 				currentContext = this.context;
@@ -244,6 +219,7 @@ public class ContextLoader {
 	 * 初始化
 	 */
 	protected WebApplicationContext createWebApplicationContext(ServletContext sc) {
+		//新建一个 XmlWebApplicationContext
 		Class<?> contextClass = determineContextClass(sc);
 		if (!ConfigurableWebApplicationContext.class.isAssignableFrom(contextClass)) {
 			throw new ApplicationContextException("Custom context class [" + contextClass.getName() +
@@ -272,6 +248,7 @@ public class ContextLoader {
 						"Failed to load custom context class [" + contextClassName + "]", ex);
 			}
 		} else {
+			//第一次执行的时候 默认的是XmlWebApplicationContext
 			contextClassName = defaultStrategies.getProperty(WebApplicationContext.class.getName());
 			try {
 				return ClassUtils.forName(contextClassName, ContextLoader.class.getClassLoader());
@@ -287,6 +264,7 @@ public class ContextLoader {
 			// The application context id is still set to its original default value
 			// -> assign a more useful id based on available information
 			String idParam = sc.getInitParameter(CONTEXT_ID_PARAM);
+			//需要设置一个ID
 			if (idParam != null) {
 				wac.setId(idParam);
 			} else {
@@ -295,8 +273,9 @@ public class ContextLoader {
 						ObjectUtils.getDisplayString(sc.getContextPath()));
 			}
 		}
-
+		//把servlet设置进入
 		wac.setServletContext(sc);
+		//设置配置文件的位置
 		String configLocationParam = sc.getInitParameter(CONFIG_LOCATION_PARAM);
 		if (configLocationParam != null) {
 			wac.setConfigLocation(configLocationParam);
@@ -399,21 +378,6 @@ public class ContextLoader {
 		}
 	}
 
-	/**
-	 * Template method with default implementation (which may be overridden by a
-	 * subclass), to load or obtain an ApplicationContext instance which will be
-	 * used as the parent context of the root WebApplicationContext. If the
-	 * return value from the method is null, no parent context is set.
-	 * <p>The main reason to load a parent context here is to allow multiple root
-	 * web application contexts to all be children of a shared EAR context, or
-	 * alternately to also share the same parent context that is visible to
-	 * EJBs. For pure web applications, there is usually no need to worry about
-	 * having a parent context to the root web application context.
-	 * <p>The default implementation simply returns {@code null}, as of 5.0.
-	 *
-	 * @param servletContext current servlet context
-	 * @return the parent application context, or {@code null} if none
-	 */
 	@Nullable
 	protected ApplicationContext loadParentContext(ServletContext servletContext) {
 		return null;

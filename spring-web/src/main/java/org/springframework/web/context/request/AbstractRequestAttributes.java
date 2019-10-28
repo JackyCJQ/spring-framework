@@ -34,7 +34,7 @@ public abstract class AbstractRequestAttributes implements RequestAttributes {
 
 	/** Map from attribute name String to destruction callback Runnable. */
 	protected final Map<String, Runnable> requestDestructionCallbacks = new LinkedHashMap<>(8);
-
+    //标记这次请求是否结束
 	private volatile boolean requestActive = true;
 
 

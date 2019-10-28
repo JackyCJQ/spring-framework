@@ -56,7 +56,7 @@ import org.springframework.web.util.WebUtils;
 @SuppressWarnings("serial")
 public class DispatcherServlet extends FrameworkServlet {
 
-	//9大组件的名字
+	//默认9大组件的名字
 	public static final String MULTIPART_RESOLVER_BEAN_NAME = "multipartResolver";
 
 
@@ -181,34 +181,20 @@ public class DispatcherServlet extends FrameworkServlet {
 	@Nullable
 	private List<ViewResolver> viewResolvers;
 
-
-	/**
-	 * Create a new {@code DispatcherServlet} that will create its own internal web
-	 * application context based on defaults and values provided through servlet
-	 * init-params. Typically used in Servlet 2.5 or earlier environments, where the only
-	 * option for servlet registration is through {@code web.xml} which requires the use
-	 * of a no-arg constructor.
-	 */
+    //默认采用的构造方法
 	public DispatcherServlet() {
 		super();
 		//设置基于http
 		setDispatchOptionsRequest(true);
 	}
 
-	/**
-	 * 外部注入一个
-	 * Create a new {@code DispatcherServlet} with the given web application context. This
-	 * constructor is useful in Servlet 3.0+ environments where instance-based registration
-	 * of servlets is possible through the {@link ServletContext#addServlet} API.
-	 * <p>Using this constructor indicates that the following properties / init-params
-	 * will be ignored:
-	 */
 	public DispatcherServlet(WebApplicationContext webApplicationContext) {
 		super(webApplicationContext);
 		//设置基于http
 		setDispatchOptionsRequest(true);
 	}
 
+	//对于一些属性的配置
 	public void setDetectAllHandlerMappings(boolean detectAllHandlerMappings) {
 		this.detectAllHandlerMappings = detectAllHandlerMappings;
 	}
@@ -230,7 +216,6 @@ public class DispatcherServlet extends FrameworkServlet {
 	}
 
 	public void setCleanupAfterInclude(boolean cleanupAfterInclude) {
-
 		this.cleanupAfterInclude = cleanupAfterInclude;
 	}
 
@@ -261,11 +246,6 @@ public class DispatcherServlet extends FrameworkServlet {
 		initFlashMapManager(context);
 	}
 
-	/**
-	 * Initialize the MultipartResolver used by this class.
-	 * <p>If no bean is defined with the given name in the BeanFactory for this namespace,
-	 * no multipart handling is provided.
-	 */
 	private void initMultipartResolver(ApplicationContext context) {
 		try {
 			//从容器中获取默认名字和类型的组件
@@ -284,11 +264,6 @@ public class DispatcherServlet extends FrameworkServlet {
 		}
 	}
 
-	/**
-	 * Initialize the LocaleResolver used by this class.
-	 * <p>If no bean is defined with the given name in the BeanFactory for this namespace,
-	 * we default to AcceptHeaderLocaleResolver.
-	 */
 	private void initLocaleResolver(ApplicationContext context) {
 		try {
 			//从容器中获取
@@ -308,11 +283,7 @@ public class DispatcherServlet extends FrameworkServlet {
 		}
 	}
 
-	/**
-	 * Initialize the ThemeResolver used by this class.
-	 * <p>If no bean is defined with the given name in the BeanFactory for this namespace,
-	 * we default to a FixedThemeResolver.
-	 */
+
 	private void initThemeResolver(ApplicationContext context) {
 		try {
 			this.themeResolver = context.getBean(THEME_RESOLVER_BEAN_NAME, ThemeResolver.class);
@@ -331,11 +302,7 @@ public class DispatcherServlet extends FrameworkServlet {
 		}
 	}
 
-	/**
-	 * Initialize the HandlerMappings used by this class.
-	 * <p>If no HandlerMapping beans are defined in the BeanFactory for this namespace,
-	 * we default to BeanNameUrlHandlerMapping.
-	 */
+
 	private void initHandlerMappings(ApplicationContext context) {
 		this.handlerMappings = null;
 		//默认是获取所有的
@@ -371,11 +338,7 @@ public class DispatcherServlet extends FrameworkServlet {
 		}
 	}
 
-	/**
-	 * Initialize the HandlerAdapters used by this class.
-	 * <p>If no HandlerAdapter beans are defined in the BeanFactory for this namespace,
-	 * we default to SimpleControllerHandlerAdapter.
-	 */
+
 	private void initHandlerAdapters(ApplicationContext context) {
 		this.handlerAdapters = null;
 
@@ -408,11 +371,7 @@ public class DispatcherServlet extends FrameworkServlet {
 		}
 	}
 
-	/**
-	 * Initialize the HandlerExceptionResolver used by this class.
-	 * <p>If no bean is defined with the given name in the BeanFactory for this namespace,
-	 * we default to no exception resolver.
-	 */
+
 	private void initHandlerExceptionResolvers(ApplicationContext context) {
 		this.handlerExceptionResolvers = null;
 
@@ -446,10 +405,7 @@ public class DispatcherServlet extends FrameworkServlet {
 		}
 	}
 
-	/**
-	 * Initialize the RequestToViewNameTranslator used by this servlet instance.
-	 * <p>If no implementation is configured then we default to DefaultRequestToViewNameTranslator.
-	 */
+
 	private void initRequestToViewNameTranslator(ApplicationContext context) {
 		try {
 			//从容器中获取
@@ -470,11 +426,7 @@ public class DispatcherServlet extends FrameworkServlet {
 		}
 	}
 
-	/**
-	 * Initialize the ViewResolvers used by this class.
-	 * <p>If no ViewResolver beans are defined in the BeanFactory for this
-	 * namespace, we default to InternalResourceViewResolver.
-	 */
+
 	private void initViewResolvers(ApplicationContext context) {
 		this.viewResolvers = null;
 
@@ -507,11 +459,7 @@ public class DispatcherServlet extends FrameworkServlet {
 		}
 	}
 
-	/**
-	 * Initialize the {@link FlashMapManager} used by this servlet instance.
-	 * <p>If no implementation is configured then we default to
-	 * {@code org.springframework.web.servlet.support.DefaultFlashMapManager}.
-	 */
+
 	private void initFlashMapManager(ApplicationContext context) {
 		try {
 			//从容器中获取
@@ -531,41 +479,18 @@ public class DispatcherServlet extends FrameworkServlet {
 		}
 	}
 
-	/**
-	 * Return this servlet's ThemeSource, if any; else return {@code null}.
-	 * <p>Default is to return the WebApplicationContext as ThemeSource,
-	 * provided that it implements the ThemeSource interface.
-	 *
-	 * @return the ThemeSource, if any
-	 * @see #getWebApplicationContext()
-	 */
+
 	@Nullable
 	public final ThemeSource getThemeSource() {
 		return (getWebApplicationContext() instanceof ThemeSource ? (ThemeSource) getWebApplicationContext() : null);
 	}
 
-	/**
-	 * Obtain this servlet's MultipartResolver, if any.
-	 *
-	 * @return the MultipartResolver used by this servlet, or {@code null} if none
-	 * (indicating that no multipart support is available)
-	 */
 	@Nullable
 	public final MultipartResolver getMultipartResolver() {
 		return this.multipartResolver;
 	}
 
-	/**
-	 * Return the configured {@link HandlerMapping} beans that were detected by
-	 * type in the {@link WebApplicationContext} or initialized based on the
-	 * default set of strategies from {@literal DispatcherServlet.properties}.
-	 * <p><strong>Note:</strong> This method may return {@code null} if invoked
-	 * prior to {@link #onRefresh(ApplicationContext)}.
-	 *
-	 * @return an immutable list with the configured mappings, or {@code null}
-	 * if not initialized yet
-	 * @since 5.0
-	 */
+
 	@Nullable
 	public final List<HandlerMapping> getHandlerMappings() {
 		return (this.handlerMappings != null ? Collections.unmodifiableList(this.handlerMappings) : null);
@@ -573,9 +498,6 @@ public class DispatcherServlet extends FrameworkServlet {
 
 	/**
 	 * 获取系统默认的实现
-	 * Return the default strategy object for the given strategy interface.
-	 * <p>The default implementation delegates to {@link #getDefaultStrategies},
-	 * expecting a single object in the list.
 	 */
 	protected <T> T getDefaultStrategy(ApplicationContext context, Class<T> strategyInterface) {
 		List<T> strategies = getDefaultStrategies(context, strategyInterface);
@@ -586,16 +508,7 @@ public class DispatcherServlet extends FrameworkServlet {
 		return strategies.get(0);
 	}
 
-	/**
-	 * Create a List of default strategy objects for the given strategy interface.
-	 * <p>The default implementation uses the "DispatcherServlet.properties" file (in the same
-	 * package as the DispatcherServlet class) to determine the class names. It instantiates
-	 * the strategy objects through the context's BeanFactory.
-	 *
-	 * @param context           the current WebApplicationContext
-	 * @param strategyInterface the strategy interface
-	 * @return the List of corresponding strategy objects
-	 */
+
 	@SuppressWarnings("unchecked")
 	protected <T> List<T> getDefaultStrategies(ApplicationContext context, Class<T> strategyInterface) {
 		//获取配置文件中的配置
@@ -629,17 +542,6 @@ public class DispatcherServlet extends FrameworkServlet {
 		}
 	}
 
-	/**
-	 * Create a default strategy.
-	 * <p>The default implementation uses
-	 * {@link org.springframework.beans.factory.config.AutowireCapableBeanFactory#createBean}.
-	 *
-	 * @param context the current WebApplicationContext
-	 * @param clazz   the strategy implementation class to instantiate
-	 * @return the fully configured strategy instance
-	 * @see org.springframework.context.ApplicationContext#getAutowireCapableBeanFactory()
-	 * @see org.springframework.beans.factory.config.AutowireCapableBeanFactory#createBean
-	 */
 	protected Object createDefaultStrategy(ApplicationContext context, Class<?> clazz) {
 		return context.getAutowireCapableBeanFactory().createBean(clazz);
 	}
@@ -752,9 +654,6 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * <p>All HTTP methods are handled by this method. It's up to HandlerAdapters or handlers
 	 * themselves to decide which methods are acceptable.
 	 *
-	 * @param request  current HTTP request
-	 * @param response current HTTP response
-	 * @throws Exception in case of any kind of processing failure
 	 */
 	protected void doDispatch(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		HttpServletRequest processedRequest = request;

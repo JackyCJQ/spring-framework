@@ -41,18 +41,6 @@ import java.util.Set;
 
 import org.springframework.lang.Nullable;
 
-/**
- * Miscellaneous class utility methods.
- * Mainly for internal use within the framework.
- *
- * @author Juergen Hoeller
- * @author Keith Donald
- * @author Rob Harrop
- * @author Sam Brannen
- * @since 1.1
- * @see TypeUtils
- * @see ReflectionUtils
- */
 public abstract class ClassUtils {
 
 	/** Suffix for array class names: {@code "[]"}. */
@@ -112,6 +100,7 @@ public abstract class ClassUtils {
 
 
 	static {
+		//对应8个基本类型
 		primitiveWrapperTypeMap.put(Boolean.class, boolean.class);
 		primitiveWrapperTypeMap.put(Byte.class, byte.class);
 		primitiveWrapperTypeMap.put(Character.class, char.class);
@@ -123,6 +112,7 @@ public abstract class ClassUtils {
 
 		primitiveWrapperTypeMap.forEach((key, value) -> {
 			primitiveTypeToWrapperMap.put(value, key);
+			//在把包装类型注入进去
 			registerCommonClasses(key);
 		});
 
@@ -1330,9 +1320,11 @@ public abstract class ClassUtils {
 	 * @param targetClass the target class to check against
 	 */
 	private static boolean isOverridable(Method method, @Nullable Class<?> targetClass) {
+		//私有的一般都不会被重写
 		if (Modifier.isPrivate(method.getModifiers())) {
 			return false;
 		}
+		//公共的或者是受保护的修饰符
 		if (Modifier.isPublic(method.getModifiers()) || Modifier.isProtected(method.getModifiers())) {
 			return true;
 		}
