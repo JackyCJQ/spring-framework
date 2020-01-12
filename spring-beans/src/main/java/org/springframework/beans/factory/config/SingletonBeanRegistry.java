@@ -18,6 +18,9 @@ package org.springframework.beans.factory.config;
 
 import org.springframework.lang.Nullable;
 
+/**
+ * 单例bean注册
+ */
 public interface SingletonBeanRegistry {
 
 	void registerSingleton(String beanName, Object singletonObject);

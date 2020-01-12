@@ -49,11 +49,6 @@ import org.springframework.lang.Nullable;
  * and {@code containsBeanDefinition}, the methods in this interface
  * are not designed for frequent invocation. Implementations may be slow.
  *
- * @author Rod Johnson
- * @author Juergen Hoeller
- * @since 16 April 2001
- * @see HierarchicalBeanFactory
- * @see BeanFactoryUtils
  */
 public interface ListableBeanFactory extends BeanFactory {
 

@@ -76,15 +76,8 @@ public interface ConfigurableEnvironment extends Environment, ConfigurableProper
 	 */
 	void setActiveProfiles(String... profiles);
 
-	/**
-	 * Add a profile to the current set of active profiles.
-	 */
 	void addActiveProfile(String profile);
 
-	/**
-	 * Specify the set of profiles to be made active by default if no other profiles
-	 * are explicitly made active through {@link #setActiveProfiles}.
-	 */
 	void setDefaultProfiles(String... profiles);
 
 	/**

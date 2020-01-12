@@ -29,7 +29,6 @@ import org.springframework.lang.Nullable;
  * reloaded if the implementation supports this.
  *
  * <p>An ApplicationContext provides:
- * <ul>
  * <li>Bean factory methods for accessing application components.
  * Inherited from {@link org.springframework.beans.factory.ListableBeanFactory}.
  * <li>The ability to load file resources in a generic fashion.
@@ -48,12 +47,6 @@ import org.springframework.lang.Nullable;
  * lifecycle capabilities, ApplicationContext implementations detect and invoke
  * {@link ApplicationContextAware} beans as well as {@link ResourceLoaderAware},
  * {@link ApplicationEventPublisherAware} and {@link MessageSourceAware} beans.
- *
- * @author Rod Johnson
- * @author Juergen Hoeller
- * @see ConfigurableApplicationContext
- * @see org.springframework.beans.factory.BeanFactory
- * @see org.springframework.core.io.ResourceLoader
  */
 public interface ApplicationContext extends EnvironmentCapable, ListableBeanFactory, HierarchicalBeanFactory,
 		MessageSource, ApplicationEventPublisher, ResourcePatternResolver {

@@ -42,10 +42,6 @@ public interface ConfigurableBeanFactory extends HierarchicalBeanFactory, Single
 
 	String SCOPE_PROTOTYPE = "prototype";
 
-
-	/**
-	 * Set the parent of this bean factory.
-	 */
 	void setParentBeanFactory(BeanFactory parentBeanFactory) throws IllegalStateException;
 
 	/**
@@ -178,9 +174,6 @@ public interface ConfigurableBeanFactory extends HierarchicalBeanFactory, Single
 	 */
 	void addBeanPostProcessor(BeanPostProcessor beanPostProcessor);
 
-	/**
-	 * Return the current number of registered BeanPostProcessors, if any.
-	 */
 	int getBeanPostProcessorCount();
 
 	/**

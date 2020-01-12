@@ -111,43 +111,14 @@ import org.springframework.util.ReflectionUtils;
  * e.g. "mypackage/myresource.dat"), unless the {@link #getResourceByPath}
  * method is overwritten in a subclass.
  *
- * @author Rod Johnson
- * @author Juergen Hoeller
- * @author Mark Fisher
- * @author Stephane Nicoll
- * @since January 21, 2001
- * @see #refreshBeanFactory
- * @see #getBeanFactory
- * @see org.springframework.beans.factory.config.BeanFactoryPostProcessor
- * @see org.springframework.beans.factory.config.BeanPostProcessor
- * @see org.springframework.context.event.ApplicationEventMulticaster
- * @see org.springframework.context.ApplicationListener
- * @see org.springframework.context.MessageSource
  */
 public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		implements ConfigurableApplicationContext {
 
-	/**
-	 * Name of the MessageSource bean in the factory.
-	 * If none is supplied, message resolution is delegated to the parent.
-	 * @see MessageSource
-	 */
 	public static final String MESSAGE_SOURCE_BEAN_NAME = "messageSource";
 
-	/**
-	 * Name of the LifecycleProcessor bean in the factory.
-	 * If none is supplied, a DefaultLifecycleProcessor is used.
-	 * @see org.springframework.context.LifecycleProcessor
-	 * @see org.springframework.context.support.DefaultLifecycleProcessor
-	 */
 	public static final String LIFECYCLE_PROCESSOR_BEAN_NAME = "lifecycleProcessor";
 
-	/**
-	 * Name of the ApplicationEventMulticaster bean in the factory.
-	 * If none is supplied, a default SimpleApplicationEventMulticaster is used.
-	 * @see org.springframework.context.event.ApplicationEventMulticaster
-	 * @see org.springframework.context.event.SimpleApplicationEventMulticaster
-	 */
 	public static final String APPLICATION_EVENT_MULTICASTER_BEAN_NAME = "applicationEventMulticaster";
 
 
@@ -156,29 +127,20 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		// on application shutdown in WebLogic 8.1. (Reported by Dustin Woods.)
 		ContextClosedEvent.class.getName();
 	}
-
-
-	/** Logger used by this class. Available to subclasses. */
 	protected final Log logger = LogFactory.getLog(getClass());
 
-	/** Unique id for this context, if any. */
 	private String id = ObjectUtils.identityToString(this);
 
-	/** Display name. */
 	private String displayName = ObjectUtils.identityToString(this);
 
-	/** Parent context. */
 	@Nullable
 	private ApplicationContext parent;
 
-	/** Environment used by this context. */
 	@Nullable
 	private ConfigurableEnvironment environment;
-
-	/** BeanFactoryPostProcessors to apply on refresh. */
+	//beanFactory后置处理器
 	private final List<BeanFactoryPostProcessor> beanFactoryPostProcessors = new ArrayList<>();
-
-	/** System time in milliseconds when this context started. */
+    //启动时间
 	private long startupDate;
 
 	/** Flag that indicates whether this context is currently active. */
@@ -216,34 +178,14 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	@Nullable
 	private Set<ApplicationEvent> earlyApplicationEvents;
 
-
-	/**
-	 * Create a new AbstractApplicationContext with no parent.
-	 */
 	public AbstractApplicationContext() {
 		this.resourcePatternResolver = getResourcePatternResolver();
 	}
 
-	/**
-	 * Create a new AbstractApplicationContext with the given parent context.
-	 * @param parent the parent context
-	 */
 	public AbstractApplicationContext(@Nullable ApplicationContext parent) {
 		this();
 		setParent(parent);
 	}
-
-
-	//---------------------------------------------------------------------
-	// Implementation of ApplicationContext interface
-	//---------------------------------------------------------------------
-
-	/**
-	 * Set the unique id of this application context.
-	 * <p>Default is the object id of the context instance, or the name
-	 * of the context bean if the context is itself defined as a bean.
-	 * @param id the unique id of the context
-	 */
 	@Override
 	public void setId(String id) {
 		this.id = id;
@@ -259,54 +201,27 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		return "";
 	}
 
-	/**
-	 * Set a friendly name for this context.
-	 * Typically done during initialization of concrete context implementations.
-	 * <p>Default is the object id of the context instance.
-	 */
 	public void setDisplayName(String displayName) {
 		Assert.hasLength(displayName, "Display name must not be empty");
 		this.displayName = displayName;
 	}
 
-	/**
-	 * Return a friendly name for this context.
-	 * @return a display name for this context (never {@code null})
-	 */
 	@Override
 	public String getDisplayName() {
 		return this.displayName;
 	}
 
-	/**
-	 * Return the parent context, or {@code null} if there is no parent
-	 * (that is, this context is the root of the context hierarchy).
-	 */
 	@Override
 	@Nullable
 	public ApplicationContext getParent() {
 		return this.parent;
 	}
 
-	/**
-	 * Set the {@code Environment} for this application context.
-	 * <p>Default value is determined by {@link #createEnvironment()}. Replacing the
-	 * default with this method is one option but configuration through {@link
-	 * #getEnvironment()} should also be considered. In either case, such modifications
-	 * should be performed <em>before</em> {@link #refresh()}.
-	 * @see org.springframework.context.support.AbstractApplicationContext#createEnvironment
-	 */
 	@Override
 	public void setEnvironment(ConfigurableEnvironment environment) {
 		this.environment = environment;
 	}
 
-	/**
-	 * Return the {@code Environment} for this application context in configurable
-	 * form, allowing for further customization.
-	 * <p>If none specified, a default environment will be initialized via
-	 * {@link #createEnvironment()}.
-	 */
 	@Override
 	public ConfigurableEnvironment getEnvironment() {
 		if (this.environment == null) {
@@ -483,11 +398,6 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		this.beanFactoryPostProcessors.add(postProcessor);
 	}
 
-
-	/**
-	 * Return the list of BeanFactoryPostProcessors that will get applied
-	 * to the internal BeanFactory.
-	 */
 	public List<BeanFactoryPostProcessor> getBeanFactoryPostProcessors() {
 		return this.beanFactoryPostProcessors;
 	}
@@ -510,8 +420,14 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		return this.applicationListeners;
 	}
 
+	/**
+	 * 核心逻辑进行容器刷新
+	 * @throws BeansException
+	 * @throws IllegalStateException
+	 */
 	@Override
 	public void refresh() throws BeansException, IllegalStateException {
+		//进行加锁操作
 		synchronized (this.startupShutdownMonitor) {
 			// Prepare this context for refreshing.
 			prepareRefresh();
@@ -580,6 +496,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * active flag as well as performing any initialization of property sources.
 	 */
 	protected void prepareRefresh() {
+		//设置一些初始化信息
 		this.startupDate = System.currentTimeMillis();
 		this.closed.set(false);
 		this.active.set(true);

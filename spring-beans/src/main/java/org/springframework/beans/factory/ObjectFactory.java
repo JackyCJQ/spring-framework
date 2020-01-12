@@ -19,7 +19,7 @@ package org.springframework.beans.factory;
 import org.springframework.beans.BeansException;
 
 /**
- * 对象工厂
+ * 对象工厂，通过工厂获取对象
  */
 @FunctionalInterface
 public interface ObjectFactory<T> {

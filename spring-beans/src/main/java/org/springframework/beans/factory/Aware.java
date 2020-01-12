@@ -17,7 +17,7 @@
 package org.springframework.beans.factory;
 
 /**
- * 被容器自动注入组件所继承的接口
+ * 被容器自动注入组件所继承的接口,容器在初始化的时候会回写
  */
 public interface Aware {
 

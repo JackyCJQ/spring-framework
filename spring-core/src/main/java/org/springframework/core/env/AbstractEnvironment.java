@@ -89,16 +89,14 @@ public abstract class AbstractEnvironment implements ConfigurableEnvironment {
 	//易变的属性配置
 	private final MutablePropertySources propertySources = new MutablePropertySources();
 
-	private final ConfigurablePropertyResolver propertyResolver =
-			new PropertySourcesPropertyResolver(this.propertySources);
+	private final ConfigurablePropertyResolver propertyResolver = new PropertySourcesPropertyResolver(this.propertySources);
 
 
 	/**
 	 * Create a new {@code Environment} instance, calling back to
 	 * {@link #customizePropertySources(MutablePropertySources)} during construction to
 	 * allow subclasses to contribute or manipulate {@link PropertySource} instances as
-	 * appropriate.
-	 *
+	 * appropriat
 	 * @see #customizePropertySources(MutablePropertySources)
 	 */
 	public AbstractEnvironment() {

@@ -25,11 +25,6 @@ import org.springframework.lang.Nullable;
  * A BeanDefinition describes a bean instance, which has property values,
  * constructor argument values, and further information supplied by
  * concrete implementations.
- *
- * <p>This is just a minimal interface: The main intention is to allow a
- * {@link BeanFactoryPostProcessor} such as {@link PropertyPlaceholderConfigurer}
- * to introspect and modify property values and other bean metadata.
- *
  */
 public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
@@ -78,6 +73,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
 	@Nullable
 	String getScope();
+
 	//懒加载
 	void setLazyInit(boolean lazyInit);
 
@@ -102,11 +98,13 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	void setPrimary(boolean primary);
 
 	boolean isPrimary();
+
 	//通过工厂的方式来创建bean
 	void setFactoryBeanName(@Nullable String factoryBeanName);
 
 	@Nullable
 	String getFactoryBeanName();
+
 	//创建bean的对应工厂方法的名字
 	void setFactoryMethodName(@Nullable String factoryMethodName);
 
@@ -116,12 +114,14 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	/**
 	 * Return the constructor argument values for this bean.
 	 * <p>The returned instance can be modified during bean factory post-processing.
+	 *
 	 * @return the ConstructorArgumentValues object (never {@code null})
 	 */
 	ConstructorArgumentValues getConstructorArgumentValues();
 
 	/**
 	 * Return if there are constructor argument values defined for this bean.
+	 *
 	 * @since 5.0.2
 	 */
 	default boolean hasConstructorArgumentValues() {
@@ -131,12 +131,14 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	/**
 	 * Return the property values to be applied to a new instance of the bean.
 	 * <p>The returned instance can be modified during bean factory post-processing.
+	 *
 	 * @return the MutablePropertyValues object (never {@code null})
 	 */
 	MutablePropertyValues getPropertyValues();
 
 	/**
 	 * Return if there are property values values defined for this bean.
+	 *
 	 * @since 5.0.2
 	 */
 	default boolean hasPropertyValues() {

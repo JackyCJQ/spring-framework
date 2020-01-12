@@ -15,19 +15,31 @@ public interface BeanFactory {
 	 */
 	String FACTORY_BEAN_PREFIX = "&";
 
-	//通过注入bean的名字来获取
 	Object getBean(String name) throws BeansException;
 
-	//通过注入的名字和对应的类型来获取一个bean
+	/**
+	 * 通过参数的类型可以获取到返回值的类型，以后写工具类可以参考
+	 *
+	 * @param name
+	 * @param requiredType
+	 * @param <T>
+	 * @return
+	 * @throws BeansException
+	 */
 	<T> T getBean(String name, Class<T> requiredType) throws BeansException;
 
-	//通过名字和参数来获取
 	Object getBean(String name, Object... args) throws BeansException;
 
-	//通过类型来获取
+	/**
+	 * 如果有多个是不是就冲突额
+	 *
+	 * @param requiredType
+	 * @param <T>
+	 * @return
+	 * @throws BeansException
+	 */
 	<T> T getBean(Class<T> requiredType) throws BeansException;
 
-	//通过类型和参数
 	<T> T getBean(Class<T> requiredType, Object... args) throws BeansException;
 
 	/**
@@ -50,13 +62,10 @@ public interface BeanFactory {
 	 */
 	<T> ObjectProvider<T> getBeanProvider(ResolvableType requiredType);
 
-	//是否存在某个bean
 	boolean containsBean(String name);
 
-	//是否是单例的bean
 	boolean isSingleton(String name) throws NoSuchBeanDefinitionException;
 
-	//是否是共享的bean
 	boolean isPrototype(String name) throws NoSuchBeanDefinitionException;
 
 	/**
@@ -95,22 +104,9 @@ public interface BeanFactory {
 	 */
 	boolean isTypeMatch(String name, Class<?> typeToMatch) throws NoSuchBeanDefinitionException;
 
-	//获取指定名字bean的类型
 	@Nullable
 	Class<?> getType(String name) throws NoSuchBeanDefinitionException;
 
-	/**
-	 * Return the aliases for the given bean name, if any.
-	 * All of those aliases point to the same bean when used in a {@link #getBean} call.
-	 * <p>If the given name is an alias, the corresponding original bean name
-	 * and other aliases (if any) will be returned, with the original bean name
-	 * being the first element in the array.
-	 * <p>Will ask the parent factory if the bean cannot be found in this factory instance.
-	 *
-	 * @param name the bean name to check for aliases
-	 * @return the aliases, or an empty array if none
-	 * @see #getBean
-	 */
 	String[] getAliases(String name);
 
 }

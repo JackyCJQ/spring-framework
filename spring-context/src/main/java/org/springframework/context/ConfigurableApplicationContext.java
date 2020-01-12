@@ -87,34 +87,12 @@ public interface ConfigurableApplicationContext extends ApplicationContext, Life
 	String SYSTEM_ENVIRONMENT_BEAN_NAME = "systemEnvironment";
 
 
-	/**
-	 * Set the unique id of this application context.
-	 * @since 3.0
-	 */
 	void setId(String id);
 
-	/**
-	 * Set the parent of this application context.
-	 * <p>Note that the parent shouldn't be changed: It should only be set outside
-	 * a constructor if it isn't available when an object of this class is created,
-	 * for example in case of WebApplicationContext setup.
-	 * @param parent the parent context
-	 * @see org.springframework.web.context.ConfigurableWebApplicationContext
-	 */
 	void setParent(@Nullable ApplicationContext parent);
 
-	/**
-	 * Set the {@code Environment} for this application context.
-	 * @param environment the new environment
-	 * @since 3.1
-	 */
 	void setEnvironment(ConfigurableEnvironment environment);
 
-	/**
-	 * Return the {@code Environment} for this application context in configurable
-	 * form, allowing for further customization.
-	 * @since 3.1
-	 */
 	@Override
 	ConfigurableEnvironment getEnvironment();
 

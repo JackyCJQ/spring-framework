@@ -16,18 +16,17 @@
 
 package org.springframework.core;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
+import org.springframework.util.StringValueResolver;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
-import org.springframework.util.StringValueResolver;
 
 /**
  * 对于别名注册机的简单实现
@@ -35,7 +34,7 @@ import org.springframework.util.StringValueResolver;
 public class SimpleAliasRegistry implements AliasRegistry {
 
 	protected final Log logger = LogFactory.getLog(getClass());
-    //把别名映射保存在一个map中
+	//把别名映射保存在一个map中
 	private final Map<String, String> aliasMap = new ConcurrentHashMap<>(16);
 
 	@Override
@@ -78,21 +77,10 @@ public class SimpleAliasRegistry implements AliasRegistry {
 		}
 	}
 
-	/**
-	 * Return whether alias overriding is allowed.
-	 * Default is {@code true}.
-	 */
 	protected boolean allowAliasOverriding() {
 		return true;
 	}
 
-	/**
-	 * Determine whether the given name has the given alias registered.
-	 *
-	 * @param name  the name to check
-	 * @param alias the alias to look for
-	 * @since 4.2.1
-	 */
 	public boolean hasAlias(String name, String alias) {
 		for (Map.Entry<String, String> entry : this.aliasMap.entrySet()) {
 			String registeredName = entry.getValue();
@@ -184,11 +172,6 @@ public class SimpleAliasRegistry implements AliasRegistry {
 		}
 	}
 
-	/**
-	 * Check whether the given name points back to the given alias as an alias
-	 * in the other direction already, catching a circular reference upfront
-	 * and throwing a corresponding IllegalStateException.
-	 */
 	protected void checkForAliasCircle(String name, String alias) {
 		if (hasAlias(alias, name)) {
 			throw new IllegalStateException("Cannot register alias '" + alias +
