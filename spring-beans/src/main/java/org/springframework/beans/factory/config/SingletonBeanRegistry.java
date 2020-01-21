@@ -23,18 +23,40 @@ import org.springframework.lang.Nullable;
  */
 public interface SingletonBeanRegistry {
 
-	//注册单例的bean
+	/**
+	 * 直接注册单例的bean
+	 */
 	void registerSingleton(String beanName, Object singletonObject);
 
+	/**
+	 * 根据注册的名字获取单例bean
+	 *
+	 * @param beanName
+	 * @return
+	 */
 	@Nullable
 	Object getSingleton(String beanName);
 
+	/**
+	 * 根据注册bean的名字判断是否包含改单例bean
+	 *
+	 * @param beanName
+	 * @return
+	 */
 	boolean containsSingleton(String beanName);
 
-	//获取所有单例的bean
+	/**
+	 * 获取所有单例bean的名字
+	 *
+	 * @return
+	 */
 	String[] getSingletonNames();
 
-	//获取单例bean的数量
+	/**
+	 * 获取单例bean的数量
+	 *
+	 * @return
+	 */
 	int getSingletonCount();
 
 	/**

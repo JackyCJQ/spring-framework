@@ -68,7 +68,7 @@ public class SimpleAliasRegistry implements AliasRegistry {
 				}
 				//检查是否存在循环引用
 				checkForAliasCircle(name, alias);
-				//如果不存在则注入别名
+				//如果不存在则注入别名 key为alias，value为对应的名字
 				this.aliasMap.put(alias, name);
 				if (logger.isTraceEnabled()) {
 					logger.trace("Alias definition '" + alias + "' registered for name '" + name + "'");
@@ -77,6 +77,11 @@ public class SimpleAliasRegistry implements AliasRegistry {
 		}
 	}
 
+	/**
+	 * 默认允许覆盖
+	 *
+	 * @return
+	 */
 	protected boolean allowAliasOverriding() {
 		return true;
 	}
@@ -127,6 +132,7 @@ public class SimpleAliasRegistry implements AliasRegistry {
 		this.aliasMap.forEach((alias, registeredName) -> {
 			if (registeredName.equals(name)) {
 				result.add(alias);
+				//看是否还有其他的引用这个
 				retrieveAliases(alias, result);
 			}
 		});
@@ -145,6 +151,7 @@ public class SimpleAliasRegistry implements AliasRegistry {
 		synchronized (this.aliasMap) {
 			Map<String, String> aliasCopy = new HashMap<>(this.aliasMap);
 			aliasCopy.forEach((alias, registeredName) -> {
+				//获取对应的数值
 				String resolvedAlias = valueResolver.resolveStringValue(alias);
 				String resolvedName = valueResolver.resolveStringValue(registeredName);
 				if (resolvedAlias == null || resolvedName == null || resolvedAlias.equals(resolvedName)) {
@@ -172,6 +179,11 @@ public class SimpleAliasRegistry implements AliasRegistry {
 		}
 	}
 
+	/**
+	 * 检查是否存在循环引用
+	 * @param name
+	 * @param alias
+	 */
 	protected void checkForAliasCircle(String name, String alias) {
 		if (hasAlias(alias, name)) {
 			throw new IllegalStateException("Cannot register alias '" + alias +
