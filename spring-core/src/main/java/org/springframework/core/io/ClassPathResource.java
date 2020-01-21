@@ -51,30 +51,10 @@ public class ClassPathResource extends AbstractFileResolvingResource {
 	@Nullable
 	private Class<?> clazz;
 
-
-	/**
-	 * Create a new {@code ClassPathResource} for {@code ClassLoader} usage.
-	 * A leading slash will be removed, as the ClassLoader resource access
-	 * methods will not accept it.
-	 * <p>The thread context class loader will be used for
-	 * loading the resource.
-	 * @param path the absolute path within the class path
-	 * @see java.lang.ClassLoader#getResourceAsStream(String)
-	 * @see org.springframework.util.ClassUtils#getDefaultClassLoader()
-	 */
 	public ClassPathResource(String path) {
 		this(path, (ClassLoader) null);
 	}
 
-	/**
-	 * Create a new {@code ClassPathResource} for {@code ClassLoader} usage.
-	 * A leading slash will be removed, as the ClassLoader resource access
-	 * methods will not accept it.
-	 * @param path the absolute path within the classpath
-	 * @param classLoader the class loader to load the resource with,
-	 * or {@code null} for the thread context class loader
-	 * @see ClassLoader#getResourceAsStream(String)
-	 */
 	public ClassPathResource(String path, @Nullable ClassLoader classLoader) {
 		Assert.notNull(path, "Path must not be null");
 		String pathToUse = StringUtils.cleanPath(path);
@@ -82,17 +62,10 @@ public class ClassPathResource extends AbstractFileResolvingResource {
 			pathToUse = pathToUse.substring(1);
 		}
 		this.path = pathToUse;
+		//默认使用上下文加载器
 		this.classLoader = (classLoader != null ? classLoader : ClassUtils.getDefaultClassLoader());
 	}
 
-	/**
-	 * Create a new {@code ClassPathResource} for {@code Class} usage.
-	 * The path can be relative to the given class, or absolute within
-	 * the classpath via a leading slash.
-	 * @param path relative or absolute path within the class path
-	 * @param clazz the class to load resources with
-	 * @see java.lang.Class#getResourceAsStream
-	 */
 	public ClassPathResource(String path, @Nullable Class<?> clazz) {
 		Assert.notNull(path, "Path must not be null");
 		this.path = StringUtils.cleanPath(path);
@@ -115,17 +88,10 @@ public class ClassPathResource extends AbstractFileResolvingResource {
 		this.clazz = clazz;
 	}
 
-
-	/**
-	 * Return the path for this resource (as resource path within the class path).
-	 */
 	public final String getPath() {
 		return this.path;
 	}
 
-	/**
-	 * Return the ClassLoader that this resource will be obtained from.
-	 */
 	@Nullable
 	public final ClassLoader getClassLoader() {
 		return (this.clazz != null ? this.clazz.getClassLoader() : this.classLoader);
@@ -142,10 +108,7 @@ public class ClassPathResource extends AbstractFileResolvingResource {
 		return (resolveURL() != null);
 	}
 
-	/**
-	 * Resolves a URL for the underlying class path resource.
-	 * @return the resolved URL, or {@code null} if not resolvable
-	 */
+	//优先使用类进行资源加载，在使用类加载器
 	@Nullable
 	protected URL resolveURL() {
 		if (this.clazz != null) {
@@ -159,11 +122,6 @@ public class ClassPathResource extends AbstractFileResolvingResource {
 		}
 	}
 
-	/**
-	 * This implementation opens an InputStream for the given class path resource.
-	 * @see java.lang.ClassLoader#getResourceAsStream(String)
-	 * @see java.lang.Class#getResourceAsStream(String)
-	 */
 	@Override
 	public InputStream getInputStream() throws IOException {
 		InputStream is;

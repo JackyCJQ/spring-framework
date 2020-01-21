@@ -7,6 +7,7 @@ import org.springframework.lang.Nullable;
 
 /**
  * 容器的父类
+ * 仅仅只是定义了获取的操作，也就是可以从factory中获取bean
  */
 public interface BeanFactory {
 

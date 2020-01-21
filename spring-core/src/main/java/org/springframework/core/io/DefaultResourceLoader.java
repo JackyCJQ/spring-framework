@@ -39,43 +39,21 @@ public class DefaultResourceLoader implements ResourceLoader {
 
 	private final Map<Class<?>, Map<Resource, ?>> resourceCaches = new ConcurrentHashMap<>(4);
 
-
-	/**
-	 * Create a new DefaultResourceLoader.
-	 * <p>ClassLoader access will happen using the thread context class loader
-	 * at the time of this ResourceLoader's initialization.
-	 * @see java.lang.Thread#getContextClassLoader()
-	 */
 	public DefaultResourceLoader() {
+		//默认使用上下文加载器
 		this.classLoader = ClassUtils.getDefaultClassLoader();
 	}
 
-	/**
-	 * Create a new DefaultResourceLoader.
-	 * @param classLoader the ClassLoader to load class path resources with, or {@code null}
-	 * for using the thread context class loader at the time of actual resource access
-	 */
 	public DefaultResourceLoader(@Nullable ClassLoader classLoader) {
+
 		this.classLoader = classLoader;
 	}
 
 
-	/**
-	 * Specify the ClassLoader to load class path resources with, or {@code null}
-	 * for using the thread context class loader at the time of actual resource access.
-	 * <p>The default is that ClassLoader access will happen using the thread context
-	 * class loader at the time of this ResourceLoader's initialization.
-	 */
 	public void setClassLoader(@Nullable ClassLoader classLoader) {
 		this.classLoader = classLoader;
 	}
 
-	/**
-	 * Return the ClassLoader to load class path resources with.
-	 * <p>Will get passed to ClassPathResource's constructor for all
-	 * ClassPathResource objects created by this resource loader.
-	 * @see ClassPathResource
-	 */
 	@Override
 	@Nullable
 	public ClassLoader getClassLoader() {
@@ -95,11 +73,6 @@ public class DefaultResourceLoader implements ResourceLoader {
 		this.protocolResolvers.add(resolver);
 	}
 
-	/**
-	 * Return the collection of currently registered protocol resolvers,
-	 * allowing for introspection as well as modification.
-	 * @since 4.3
-	 */
 	public Collection<ProtocolResolver> getProtocolResolvers() {
 		return this.protocolResolvers;
 	}
@@ -115,11 +88,6 @@ public class DefaultResourceLoader implements ResourceLoader {
 		return (Map<Resource, T>) this.resourceCaches.computeIfAbsent(valueType, key -> new ConcurrentHashMap<>());
 	}
 
-	/**
-	 * Clear all resource caches in this resource loader.
-	 * @since 5.0
-	 * @see #getResourceCache
-	 */
 	public void clearResourceCaches() {
 		this.resourceCaches.clear();
 	}

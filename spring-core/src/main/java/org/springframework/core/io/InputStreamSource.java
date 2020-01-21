@@ -19,7 +19,9 @@ package org.springframework.core.io;
 import java.io.IOException;
 import java.io.InputStream;
 
-
+/**
+ * 读取资源获取一个流
+ */
 public interface InputStreamSource {
 
 	InputStream getInputStream() throws IOException;

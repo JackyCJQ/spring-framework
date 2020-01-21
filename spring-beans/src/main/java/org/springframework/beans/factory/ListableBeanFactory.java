@@ -244,7 +244,6 @@ public interface ListableBeanFactory extends BeanFactory {
 	 * @since 3.0
 	 */
 	@Nullable
-	<A extends Annotation> A findAnnotationOnBean(String beanName, Class<A> annotationType)
-			throws NoSuchBeanDefinitionException;
+	<A extends Annotation> A findAnnotationOnBean(String beanName, Class<A> annotationType) throws NoSuchBeanDefinitionException;
 
 }

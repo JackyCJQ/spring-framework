@@ -16,9 +16,6 @@
 
 package org.springframework.beans.factory.config;
 
-import java.beans.PropertyEditor;
-import java.security.AccessControlContext;
-
 import org.springframework.beans.PropertyEditorRegistrar;
 import org.springframework.beans.PropertyEditorRegistry;
 import org.springframework.beans.TypeConverter;
@@ -30,7 +27,11 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringValueResolver;
 
+import java.beans.PropertyEditor;
+import java.security.AccessControlContext;
+
 /**
+ * 开始提供Bean的配置能力，能够配置加入到容器中来，这个接口基本上就具有管理容器的能力
  * Configuration interface to be implemented by most bean factories. Provides
  * facilities to configure a bean factory, in addition to the bean factory
  * client methods in the {@link org.springframework.beans.factory.BeanFactory}
@@ -42,6 +43,7 @@ public interface ConfigurableBeanFactory extends HierarchicalBeanFactory, Single
 
 	String SCOPE_PROTOTYPE = "prototype";
 
+	//增强HierarchicalBeanFactory能力 能够设置父容器
 	void setParentBeanFactory(BeanFactory parentBeanFactory) throws IllegalStateException;
 
 	/**
@@ -71,6 +73,7 @@ public interface ConfigurableBeanFactory extends HierarchicalBeanFactory, Single
 	ClassLoader getTempClassLoader();
 
 	/**
+	 * 是否缓存bean的元数据
 	 * Set whether to cache bean metadata such as given bean definitions
 	 * (in merged fashion) and resolved bean classes.
 	 */
@@ -83,6 +86,7 @@ public interface ConfigurableBeanFactory extends HierarchicalBeanFactory, Single
 	boolean isCacheBeanMetadata();
 
 	/**
+	 * 设置bean表达式解析器
 	 * Specify the resolution strategy for expressions in bean definition values.
 	 */
 	void setBeanExpressionResolver(@Nullable BeanExpressionResolver resolver);
@@ -94,6 +98,7 @@ public interface ConfigurableBeanFactory extends HierarchicalBeanFactory, Single
 	BeanExpressionResolver getBeanExpressionResolver();
 
 	/**
+	 * 设置一个转换service
 	 * Specify a Spring 3.0 ConversionService to use for converting
 	 * property values, as an alternative to JavaBeans PropertyEditors.
 	 */
@@ -164,6 +169,7 @@ public interface ConfigurableBeanFactory extends HierarchicalBeanFactory, Single
 	String resolveEmbeddedValue(String value);
 
 	/**
+	 * 添加bean后置处理器
 	 * Add a new BeanPostProcessor that will get applied to beans created
 	 * by this factory. To be invoked during factory configuration.
 	 * <p>Note: Post-processors submitted here will be applied in the order of

@@ -23,7 +23,7 @@ public interface ResourceLoader {
 
 	/** "classpath:"*/
 	String CLASSPATH_URL_PREFIX = ResourceUtils.CLASSPATH_URL_PREFIX;
-
+    //加载Location处的资源
 	Resource getResource(String location);
 
 	@Nullable

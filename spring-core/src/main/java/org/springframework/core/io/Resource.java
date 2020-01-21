@@ -27,7 +27,8 @@ import java.nio.channels.ReadableByteChannel;
 import org.springframework.lang.Nullable;
 
 /**
- * 代表着资源
+ * 代表着资源 URL没有实现相对于classpath和servletCOntext等资源的handler，没有提供资源检查，读取等操作。
+ * 所以Spring自己进行了定义
  */
 public interface Resource extends InputStreamSource {
 
