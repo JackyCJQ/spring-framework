@@ -34,6 +34,7 @@ import java.lang.annotation.Annotation;
 import java.util.function.Supplier;
 
 /**
+ * 注解类bean解析
  * Convenient adapter for programmatic registration of annotated bean classes.
  * This is an alternative to {@link ClassPathBeanDefinitionScanner}, applying
  * the same resolution of annotations but for explicitly registered classes only.
@@ -128,12 +129,6 @@ public class AnnotatedBeanDefinitionReader {
 
 	/**
 	 * 解析注解类
-	 * Register one or more annotated classes to be processed.
-	 * <p>Calls to {@code register} are idempotent; adding the same
-	 * annotated class more than once has no additional effect.
-	 *
-	 * @param annotatedClasses one or more annotated classes,
-	 *                         e.g. {@link Configuration @Configuration} classes
 	 */
 	public void register(Class<?>... annotatedClasses) {
 		for (Class<?> annotatedClass : annotatedClasses) {
@@ -148,6 +143,7 @@ public class AnnotatedBeanDefinitionReader {
 	 * @param annotatedClass the class of the bean
 	 */
 	public void registerBean(Class<?> annotatedClass) {
+
 		doRegisterBean(annotatedClass, null, null, null);
 	}
 
@@ -193,21 +189,13 @@ public class AnnotatedBeanDefinitionReader {
 		doRegisterBean(annotatedClass, null, null, qualifiers);
 	}
 
-	/**
-	 * Register a bean from the given bean class, deriving its metadata from
-	 * class-declared annotations.
-	 *
-	 * @param annotatedClass the class of the bean
-	 * @param name           an explicit name for the bean
-	 * @param qualifiers     specific qualifier annotations to consider,
-	 *                       in addition to qualifiers at the bean class level
-	 */
 	@SuppressWarnings("unchecked")
 	public void registerBean(Class<?> annotatedClass, String name, Class<? extends Annotation>... qualifiers) {
 		doRegisterBean(annotatedClass, null, name, qualifiers);
 	}
 
 	/**
+	 * 注册一个类
 	 * Register a bean from the given bean class, deriving its metadata from
 	 * class-declared annotations.
 	 *
@@ -237,8 +225,9 @@ public class AnnotatedBeanDefinitionReader {
 		//读取bean的范围信息
 		ScopeMetadata scopeMetadata = this.scopeMetadataResolver.resolveScopeMetadata(abd);
 		abd.setScope(scopeMetadata.getScopeName());
+		//如果没有bean的名字则生成一个
 		String beanName = (name != null ? name : this.beanNameGenerator.generateBeanName(abd, this.registry));
-
+        //首先处理公共注解
 		AnnotationConfigUtils.processCommonDefinitionAnnotations(abd);
 		if (qualifiers != null) {
 			for (Class<? extends Annotation> qualifier : qualifiers) {
@@ -257,6 +246,7 @@ public class AnnotatedBeanDefinitionReader {
 
 		BeanDefinitionHolder definitionHolder = new BeanDefinitionHolder(abd, beanName);
 		definitionHolder = AnnotationConfigUtils.applyScopedProxyMode(scopeMetadata, definitionHolder, this.registry);
+		//注册bean处理器
 		BeanDefinitionReaderUtils.registerBeanDefinition(definitionHolder, this.registry);
 	}
 

@@ -18,27 +18,10 @@ public interface BeanFactory {
 
 	Object getBean(String name) throws BeansException;
 
-	/**
-	 * 通过参数的类型可以获取到返回值的类型，以后写工具类可以参考
-	 *
-	 * @param name
-	 * @param requiredType
-	 * @param <T>
-	 * @return
-	 * @throws BeansException
-	 */
 	<T> T getBean(String name, Class<T> requiredType) throws BeansException;
 
 	Object getBean(String name, Object... args) throws BeansException;
 
-	/**
-	 * 如果有多个是不是就冲突额
-	 *
-	 * @param requiredType
-	 * @param <T>
-	 * @return
-	 * @throws BeansException
-	 */
 	<T> T getBean(Class<T> requiredType) throws BeansException;
 
 	<T> T getBean(Class<T> requiredType, Object... args) throws BeansException;

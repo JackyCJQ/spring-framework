@@ -45,7 +45,6 @@ public class DefaultResourceLoader implements ResourceLoader {
 	}
 
 	public DefaultResourceLoader(@Nullable ClassLoader classLoader) {
-
 		this.classLoader = classLoader;
 	}
 
@@ -60,14 +59,6 @@ public class DefaultResourceLoader implements ResourceLoader {
 		return (this.classLoader != null ? this.classLoader : ClassUtils.getDefaultClassLoader());
 	}
 
-	/**
-	 * Register the given resolver with this resource loader, allowing for
-	 * additional protocols to be handled.
-	 * <p>Any such resolver will be invoked ahead of this loader's standard
-	 * resolution rules. It may therefore also override any default rules.
-	 * @since 4.3
-	 * @see #getProtocolResolvers()
-	 */
 	public void addProtocolResolver(ProtocolResolver resolver) {
 		Assert.notNull(resolver, "ProtocolResolver must not be null");
 		this.protocolResolvers.add(resolver);
@@ -77,12 +68,6 @@ public class DefaultResourceLoader implements ResourceLoader {
 		return this.protocolResolvers;
 	}
 
-	/**
-	 * Obtain a cache for the given value type, keyed by {@link Resource}.
-	 * @param valueType the value type, e.g. an ASM {@code MetadataReader}
-	 * @return the cache {@link Map}, shared at the {@code ResourceLoader} level
-	 * @since 5.0
-	 */
 	@SuppressWarnings("unchecked")
 	public <T> Map<Resource, T> getResourceCache(Class<T> valueType) {
 		return (Map<Resource, T>) this.resourceCaches.computeIfAbsent(valueType, key -> new ConcurrentHashMap<>());
@@ -96,7 +81,6 @@ public class DefaultResourceLoader implements ResourceLoader {
 	@Override
 	public Resource getResource(String location) {
 		Assert.notNull(location, "Location must not be null");
-
 		for (ProtocolResolver protocolResolver : this.protocolResolvers) {
 			Resource resource = protocolResolver.resolve(location, this);
 			if (resource != null) {

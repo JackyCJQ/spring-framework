@@ -19,7 +19,7 @@ package org.springframework.core;
 import org.springframework.lang.Nullable;
 
 /**
- *
+ * 属性配置获取处理器
  */
 public interface AttributeAccessor {
 

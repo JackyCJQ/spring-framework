@@ -28,6 +28,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.MultiValueMap;
 
 /**
+ * 标准的元数据
  * {@link AnnotationMetadata} implementation that uses standard reflection
  * to introspect a given {@link Class}.
  *

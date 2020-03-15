@@ -16,19 +16,18 @@
 
 package org.springframework.core.io;
 
+import org.springframework.lang.Nullable;
+
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 
-import org.springframework.lang.Nullable;
-
 /**
  * 代表着资源 URL没有实现相对于classpath和servletCOntext等资源的handler，没有提供资源检查，读取等操作。
- * 所以Spring自己进行了定义
+ * 所以Spring自己进行了定义.下面方法中定义了这些实现
  */
 public interface Resource extends InputStreamSource {
 
