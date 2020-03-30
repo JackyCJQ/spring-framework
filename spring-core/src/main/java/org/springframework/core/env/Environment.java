@@ -16,7 +16,9 @@
 
 package org.springframework.core.env;
 
-
+/**
+ * 继承了属性解析的接口
+ */
 public interface Environment extends PropertyResolver {
 
 	/**
@@ -38,6 +40,7 @@ public interface Environment extends PropertyResolver {
 
 	/**
 	 * 接受配置文件,单个的配置
+	 *
 	 * @param profiles
 	 * @return
 	 */

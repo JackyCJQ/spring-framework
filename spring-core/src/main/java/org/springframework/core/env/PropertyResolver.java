@@ -32,6 +32,7 @@ public interface PropertyResolver {
 
 	/**
 	 * 获取属性
+	 *
 	 * @param key
 	 * @param defaultValue
 	 * @return
@@ -49,6 +50,7 @@ public interface PropertyResolver {
 	<T> T getRequiredProperty(String key, Class<T> targetType) throws IllegalStateException;
 
 	/**
+	 * 替换变量中的参数
 	 * Resolve ${...} placeholders in the given text, replacing them with corresponding
 	 * property values as resolved by {@link #getProperty}.
 	 */

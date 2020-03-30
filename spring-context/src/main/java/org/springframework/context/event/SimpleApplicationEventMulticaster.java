@@ -54,10 +54,6 @@ public class SimpleApplicationEventMulticaster extends AbstractApplicationEventM
 	@Nullable
 	private ErrorHandler errorHandler;
 
-
-	/**
-	 * Create a new SimpleApplicationEventMulticaster.
-	 */
 	public SimpleApplicationEventMulticaster() {
 	}
 
@@ -69,59 +65,30 @@ public class SimpleApplicationEventMulticaster extends AbstractApplicationEventM
 	}
 
 
-	/**
-	 * Set a custom executor (typically a {@link org.springframework.core.task.TaskExecutor})
-	 * to invoke each listener with.
-	 * <p>Default is equivalent to {@link org.springframework.core.task.SyncTaskExecutor},
-	 * executing all listeners synchronously in the calling thread.
-	 * <p>Consider specifying an asynchronous task executor here to not block the
-	 * caller until all listeners have been executed. However, note that asynchronous
-	 * execution will not participate in the caller's thread context (class loader,
-	 * transaction association) unless the TaskExecutor explicitly supports this.
-	 * @see org.springframework.core.task.SyncTaskExecutor
-	 * @see org.springframework.core.task.SimpleAsyncTaskExecutor
-	 */
 	public void setTaskExecutor(@Nullable Executor taskExecutor) {
 		this.taskExecutor = taskExecutor;
 	}
 
-	/**
-	 * Return the current task executor for this multicaster.
-	 */
 	@Nullable
 	protected Executor getTaskExecutor() {
 		return this.taskExecutor;
 	}
 
-	/**
-	 * Set the {@link ErrorHandler} to invoke in case an exception is thrown
-	 * from a listener.
-	 * <p>Default is none, with a listener exception stopping the current
-	 * multicast and getting propagated to the publisher of the current event.
-	 * If a {@linkplain #setTaskExecutor task executor} is specified, each
-	 * individual listener exception will get propagated to the executor but
-	 * won't necessarily stop execution of other listeners.
-	 * <p>Consider setting an {@link ErrorHandler} implementation that catches
-	 * and logs exceptions (a la
-	 * {@link org.springframework.scheduling.support.TaskUtils#LOG_AND_SUPPRESS_ERROR_HANDLER})
-	 * or an implementation that logs exceptions while nevertheless propagating them
-	 * (e.g. {@link org.springframework.scheduling.support.TaskUtils#LOG_AND_PROPAGATE_ERROR_HANDLER}).
-	 * @since 4.1
-	 */
+
 	public void setErrorHandler(@Nullable ErrorHandler errorHandler) {
 		this.errorHandler = errorHandler;
 	}
 
-	/**
-	 * Return the current error handler for this multicaster.
-	 * @since 4.1
-	 */
 	@Nullable
 	protected ErrorHandler getErrorHandler() {
 		return this.errorHandler;
 	}
 
 
+	/**
+	 * 广播一个事件
+	 * @param event the event to multicast
+	 */
 	@Override
 	public void multicastEvent(ApplicationEvent event) {
 		multicastEvent(event, resolveDefaultEventType(event));
@@ -130,6 +97,7 @@ public class SimpleApplicationEventMulticaster extends AbstractApplicationEventM
 	@Override
 	public void multicastEvent(final ApplicationEvent event, @Nullable ResolvableType eventType) {
 		ResolvableType type = (eventType != null ? eventType : resolveDefaultEventType(event));
+		//遍历每一个监听器，调用其onApplicationEvent
 		for (final ApplicationListener<?> listener : getApplicationListeners(event, type)) {
 			Executor executor = getTaskExecutor();
 			if (executor != null) {

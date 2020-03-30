@@ -66,14 +66,7 @@ import java.util.Map;
  */
 public interface ConfigurableEnvironment extends Environment, ConfigurablePropertyResolver {
 
-	/**
-	 * Specify the set of profiles active for this {@code Environment}. Profiles are
-	 * evaluated during container bootstrap to determine whether bean definitions
-	 * should be registered with the container.
-	 * <p>Any existing active profiles will be replaced with the given arguments; call
-	 * with zero arguments to clear the current set of active profiles. Use
-	 * {@link #addActiveProfile} to add a profile while preserving the existing set.
-	 */
+
 	void setActiveProfiles(String... profiles);
 
 	void addActiveProfile(String profile);
